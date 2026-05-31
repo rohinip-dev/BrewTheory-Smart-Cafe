@@ -1,0 +1,468 @@
+/* ================================
+   CAFE WEBSITE - MAIN STYLES
+   Think of this as the interior
+   design of our cafe! 🏮
+================================ */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* ================================
+   ROOT VARIABLES
+   (our cafe color theme!)
+================================ */
+:root {
+    --primary: #6F4E37;      /* Coffee brown */
+    --secondary: #C8A97E;    /* Latte beige */
+    --accent: #E8D5B7;       /* Cream */
+    --dark: #2C1810;         /* Dark espresso */
+    --light: #FDF6EC;        /* Milk white */
+    --success: #4CAF50;      /* Green */
+    --danger: #e74c3c;       /* Red */
+    --warning: #f39c12;      /* Yellow */
+    --text: #333333;
+    --shadow: 0 4px 20px rgba(111, 78, 55, 0.15);
+    --radius: 12px;
+}
+
+/* ================================
+   RESET & BASE STYLES
+================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+    color: var(--dark);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ================================
+   NAVBAR
+================================ */
+.navbar {
+    background-color: var(--dark);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+}
+
+.navbar .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--secondary);
+    font-weight: 700;
+}
+
+.navbar .logo span {
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--accent);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--secondary);
+}
+
+.nav-links .btn-nav {
+    background-color: var(--primary);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    transition: background 0.3s;
+}
+
+.nav-links .btn-nav:hover {
+    background-color: var(--secondary);
+    color: var(--dark);
+}
+
+/* ================================
+   BUTTONS
+================================ */
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: white;
+}
+
+.btn-success {
+    background-color: var(--success);
+    color: white;
+}
+
+/* ================================
+   HERO SECTION
+================================ */
+.hero {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.05)"/><circle cx="80" cy="80" r="3" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="10" r="1.5" fill="rgba(255,255,255,0.05)"/></svg>');
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero-content h1 span {
+    color: var(--secondary);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ================================
+   SECTION STYLES
+================================ */
+.section {
+    padding: 80px 40px;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.section-title p {
+    color: #777;
+    font-size: 1rem;
+}
+
+.section-title .underline {
+    width: 60px;
+    height: 4px;
+    background: var(--primary);
+    margin: 15px auto;
+    border-radius: 2px;
+}
+
+/* ================================
+   CARDS
+================================ */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 30px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 30px rgba(111, 78, 55, 0.25);
+}
+
+.card .icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--dark);
+}
+
+.card p {
+    color: #777;
+    line-height: 1.6;
+}
+
+/* ================================
+   MENU PREVIEW CARDS
+================================ */
+.menu-card {
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s;
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+}
+
+.menu-card .menu-img {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, var(--accent), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+}
+
+.menu-card .menu-info {
+    padding: 20px;
+}
+
+.menu-card .menu-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.menu-card .menu-info .price {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.menu-card .menu-info .veg-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+}
+
+.veg { background: #e8f5e9; color: #2e7d32; }
+.non-veg { background: #ffebee; color: #c62828; }
+
+/* ================================
+   STATS SECTION
+================================ */
+.stats {
+    background: linear-gradient(135deg, var(--primary), var(--dark));
+    padding: 60px 40px;
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.stat-item h3 {
+    font-size: 2.5rem;
+    color: var(--secondary);
+    margin-bottom: 5px;
+}
+
+.stat-item p {
+    color: var(--accent);
+    font-size: 0.9rem;
+}
+
+/* ================================
+   FOOTER
+================================ */
+.footer {
+    background-color: var(--dark);
+    color: var(--accent);
+    text-align: center;
+    padding: 30px;
+    font-size: 0.9rem;
+}
+
+.footer span {
+    color: var(--secondary);
+}
+
+/* ================================
+   TOAST NOTIFICATIONS
+================================ */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--dark);
+    color: white;
+    padding: 15px 25px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.toast.success { border-left: 4px solid var(--success); }
+.toast.error { border-left: 4px solid var(--danger); }
+.toast.warning { border-left: 4px solid var(--warning); }
+
+@keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ================================
+   FORMS
+================================ */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    transition: border 0.3s;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ================================
+   RESPONSIVE - MOBILE FRIENDLY
+================================ */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+  .nav-links {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .section {
+        padding: 50px 20px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}

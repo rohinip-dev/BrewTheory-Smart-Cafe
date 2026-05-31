@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☕ BrewTheory Cafe - Book a Table</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .booking-hero {
+            background: linear-gradient(135deg, #2C1810 0%, #6F4E37 100%);
+            padding: 50px 40px;
+            text-align: center;
+            color: white;
+        }
+        .booking-hero h1 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 8px;
+        }
+        .booking-hero p {
+            color: #E8D5B7;
+            font-size: 1rem;
+        }
+
+        /* MAIN LAYOUT */
+        .booking-section {
+            padding: 50px 40px;
+            background: #FDF6EC;
+            display: flex;
+            gap: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        /* LEFT — BOOKING FORM */
+        .booking-form-box {
+            flex: 1;
+            min-width: 320px;
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 4px 20px rgba(111,78,55,0.15);
+        }
+
+        .booking-form-box h2 {
+            font-size: 1.5rem;
+            color: #2C1810;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #E8D5B7;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2C1810;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border 0.3s;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #6F4E37;
+        }
+
+        /* TIME SLOTS */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .time-slot {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #555;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+        }
+
+        .time-slot:hover {
+            border-color: #6F4E37;
+            color: #6F4E37;
+        }
+
+        .time-slot.selected {
+            background: #6F4E37;
+            border-color: #6F4E37;
+            color: white;
+        }
+
+        /* TABLE SELECTOR */
+        .table-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .table-option {
+            padding: 10px 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .table-option:hover {
+            border-color: #6F4E37;
+        }
+
+        .table-option.selected {
+            background: #6F4E37;
+            border-color: #6F4E37;
+            color: white;
+        }
+
+        .table-option.unavailable {
+            background: #f5f5f5;
+            border-color: #ddd;
+            color: #bbb;
+            cursor: not-allowed;
+        }
+
+        .table-option span {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 400;
+            margin-top: 3px;
+        }
+
+        /* SUBMIT BUTTON */
+        .book-btn {
+            width: 100%;
+            padding: 15px;
+            background: #6F4E37;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .book-btn:hover {
+            background: #2C1810;
+            transform: translateY(-2px);
+        }
+
+        /* RIGHT — CART SUMMARY + MY BOOKINGS */
+        .booking-right {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* CART SUMMARY BOX */
+        .cart-summary-box {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(111,78,55,0.15);
+        }
+
+        .cart-summary-box h3 {
+            font-size: 1.1rem;
+            color: #2C1810;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E8D5B7;
+        }
+
+        .cart-summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f5f5f5;
+            color: #555;
+        }
+
+        .cart-summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2C1810;
+        }
+
+        .empty-cart-msg {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.85rem;
+            padding: 15px 0;
+        }
+
+        /* MY BOOKINGS BOX */
+        .my-bookings-box {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(111,78,55,0.15);
+        }
+
+        .my-bookings-box h3 {
+            font-size: 1.1rem;
+            color: #2C1810;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E8D5B7;
+        }
+
+        .booking-item {
+            background: #FDF6EC;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #6F4E37;
+        }
+
+        .booking-item h4 {
+            font-size: 0.9rem;
+            color: #2C1810;
+            margin-bottom: 4px;
+        }
+
+        .booking-item p {
+            font-size: 0.78rem;
+            color: #888;
+            margin-bottom: 3px;
+        }
+
+        .booking-status {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .status-confirmed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .cancel-booking-btn {
+            float: right;
+            padding: 3px 10px;
+            background: #ffebee;
+            color: #c62828;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 5px;
+        }
+
+        .cancel-booking-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* SUCCESS MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-box .success-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-box h2 {
+            font-size: 1.5rem;
+            color: #2C1810;
+            margin-bottom: 10px;
+        }
+
+        .modal-box p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .modal-box .booking-id {
+            background: #FDF6EC;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 15px 0;
+            font-weight: 700;
+            color: #6F4E37;
+            font-size: 1.1rem;
+        }
+
+        .modal-close-btn {
+            padding: 12px 30px;
+            background: #6F4E37;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+
+        .modal-close-btn:hover { background: #2C1810; }
+
+        /* NOT LOGGED IN BOX */
+        .login-prompt {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 35px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(111,78,55,0.15);
+            max-width: 450px;
+            margin: 50px auto;
+        }
+
+        .login-prompt .icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .login-prompt h2 { font-size: 1.5rem; color: #2C1810; margin-bottom: 10px; }
+        .login-prompt p { color: #888; font-size: 0.9rem; margin-bottom: 25px; }
+
+        .login-prompt-btn {
+            padding: 12px 30px;
+            background: #6F4E37;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+        .login-prompt-btn:hover { background: #2C1810; }
+
+        /* LOADING */
+        .loading-text {
+            text-align: center;
+            color: #6F4E37;
+            padding: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2C1810;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 9999;
+            font-size: 0.95rem;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { border-left: 4px solid #4CAF50; }
+        .toast.error { border-left: 4px solid #e74c3c; }
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .booking-section {
+                padding: 20px 15px;
+                flex-direction: column;
+            }
+            .booking-right { width: 100%; }
+            .time-slots { grid-template-columns: repeat(2, 1fr); }
+            .table-selector { grid-template-columns: repeat(3, 1fr); }
+            .booking-hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">Brew<span>Theory</span> ☕</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="seating.html">Seating</a></li>
+            <li><a href="booking.html">Book Table</a></li>
+            <li><a href="login.html" class="btn-nav" id="nav-login">Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="booking-hero">
+        <h1>📅 Book a Table</h1>
+        <p>Reserve your favourite spot at BrewTheory Cafe!</p>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
+        <!-- Will show login prompt or booking form -->
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-box">
+            <div class="success-icon">🎉</div>
+            <h2>Booking Confirmed!</h2>
+            <p>Your table has been reserved successfully!</p>
+            <div class="booking-id" id="modal-booking-id">
+                Booking ID: #000
+            </div>
+            <p id="modal-details"></p>
+            <button class="modal-close-btn" onclick="closeModal()">
+    🧾 View My Bill
+</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let selectedTimeSlot = '';
+        let selectedTableId = null;
+        let selectedTableNumber = null;
+        let allTables = [];
+        let cart = [];
+
+        // Show toast
+        function showToast(message, type = 'success') {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Update navbar
+        function updateNavbar() {
+            const user = localStorage.getItem('user');
+            const loginLink = document.getElementById('nav-login');
+            if (user && loginLink) {
+                const userData = JSON.parse(user);
+                loginLink.textContent = `👤 ${userData.name.split(' ')[0]}`;
+                loginLink.href = '#';
+                loginLink.onclick = () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                };
+            }
+        }
+
+        // ================================
+        // CHECK LOGIN AND SHOW CONTENT
+        // ================================
+        function initPage() {
+            const user = localStorage.getItem('user');
+
+            if (!user) {
+                // Show login prompt
+                document.getElementById('main-content').innerHTML = `
+                    <div class="login-prompt">
+                        <div class="icon">🔐</div>
+                        <h2>Please Login First!</h2>
+                        <p>You need to be logged in to book a table at BrewTheory Cafe!</p>
+                        <button class="login-prompt-btn"
+                            onclick="window.location.href='login.html'">
+                            🔑 Login Now
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show booking form
+            showBookingForm();
+        }
+
+        // ================================
+        // SHOW BOOKING FORM
+        // ================================
+        function showBookingForm() {
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            document.getElementById('main-content').innerHTML = `
+                <div class="booking-section">
+
+                    <!-- LEFT — BOOKING FORM -->
+                    <div class="booking-form-box">
+                        <h2>📅 Reserve Your Table</h2>
+
+                        <!-- DATE -->
+                        <div class="form-group">
+                            <label>📆 Select Date</label>
+                            <input type="date" id="booking-date"
+                                min="${getTodayDate()}"
+                                value="${getTodayDate()}">
+                        </div>
+
+                        <!-- TIME SLOT -->
+                        <div class="form-group">
+                            <label>⏰ Select Time Slot</label>
+                            <div class="time-slots">
+                                <button class="time-slot"
+                                    onclick="selectSlot(this, '8:00 AM - 10:00 AM')">
+                                    🌅 8:00 AM - 10:00 AM
+                                </button>
+                                <button class="time-slot"
+                                    onclick="selectSlot(this, '11:00 AM - 1:00 PM')">
+                                    ☀️ 11:00 AM - 1:00 PM
+                                </button>
+                                <button class="time-slot"
+                                    onclick="selectSlot(this, '1:00 PM - 3:00 PM')">
+                                    🌤️ 1:00 PM - 3:00 PM
+                                </button>
+                                <button class="time-slot"
+                                    onclick="selectSlot(this, '3:00 PM - 5:00 PM')">
+                                    🌙 3:00 PM - 5:00 PM
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- NUMBER OF PEOPLE -->
+                        <div class="form-group">
+                            <label>👥 Number of People</label>
+                            <select id="num-people">
+                                <option value="1">1 Person</option>
+                                <option value="2" selected>2 People</option>
+                                <option value="3">3 People</option>
+                                <option value="4">4 People</option>
+                                <option value="5">5 People</option>
+                                <option value="6">6 People</option>
+                                <option value="7">7 People</option>
+                                <option value="8">8 People</option>
+                            </select>
+                        </div>
+
+                        <!-- TABLE SELECTION -->
+                        <div class="form-group">
+                            <label>🪑 Select Table</label>
+                            <div class="table-selector" id="table-selector">
+                                <div style="color:#aaa; font-size:0.85rem; 
+                                    grid-column: span 4; text-align:center; padding:10px;">
+                                    ⏳ Loading tables...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SPECIAL NOTE -->
+                        <div class="form-group">
+                            <label>📝 Special Note (Optional)</label>
+                            <input type="text" id="special-note"
+                                placeholder="e.g. Birthday celebration, Study group...">
+                        </div>
+
+                        <div class="loading-text" id="booking-loading">
+                            ⏳ Booking your table...
+                        </div>
+
+                        <button class="book-btn" onclick="submitBooking()">
+                            📅 Confirm Booking
+                        </button>
+                    </div>
+
+                    <!-- RIGHT SIDE -->
+                    <div class="booking-right">
+
+                        <!-- CART SUMMARY -->
+                        <div class="cart-summary-box">
+                            <h3>🛒 Your Order Summary</h3>
+                            <div id="cart-summary-content">
+                                <div class="empty-cart-msg">
+                                    No items in cart!<br>
+                                    <a href="menu.html"
+                                        style="color:#6F4E37; font-weight:600;">
+                                        Browse Menu →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MY BOOKINGS -->
+                        <div class="my-bookings-box">
+                            <h3>📋 My Bookings</h3>
+                            <div id="my-bookings-content">
+                                <div class="empty-cart-msg">
+                                    ⏳ Loading your bookings...
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+
+            // Load tables and bookings
+            loadTables();
+            loadMyBookings();
+            loadCartSummary();
+
+            // Check if table was pre-selected from seating page
+            const preSelectedId = localStorage.getItem('selected_table_id');
+            const preSelectedNumber = localStorage.getItem('selected_table_number');
+            if (preSelectedId) {
+                selectedTableId = parseInt(preSelectedId);
+                selectedTableNumber = parseInt(preSelectedNumber);
+                localStorage.removeItem('selected_table_id');
+                localStorage.removeItem('selected_table_number');
+            }
+        }
+
+        // ================================
+        // GET TODAY DATE
+        // ================================
+        function getTodayDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+         // ================================
+        // SELECT TIME SLOT
+        // ================================
+        function selectSlot(btn, slot) {
+            document.querySelectorAll('.time-slot').forEach(b =>
+                b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedTimeSlot = slot;
+        }
+
+        // ================================
+        // LOAD ALL TABLES
+        // ================================
+        async function loadTables() {
+            try {
+                const response = await fetch(`${API_URL}/seating`);
+                allTables = await response.json();
+
+                const selector = document.getElementById('table-selector');
+                if (!selector) return;
+
+                selector.innerHTML = allTables.map(table => `
+                    <div class="table-option ${table.status !== 'available' ? 'unavailable' : ''}"
+                         id="table-opt-${table.id}"
+                         onclick="${table.status === 'available'
+                             ? `selectTable(${table.id}, ${table.table_number})`
+                             : ''
+                         }">
+                        🪑 T${table.table_number}
+                        <span>${table.capacity} seats</span>
+                    </div>
+                `).join('');
+
+                // Highlight pre-selected table
+                if (selectedTableId) {
+                    const el = document.getElementById(`table-opt-${selectedTableId}`);
+                    if (el) el.classList.add('selected');
+                }
+
+            } catch (err) {
+                console.log('Tables load error:', err);
+            }
+        }
+
+        // ================================
+        // SELECT TABLE
+        // ================================
+        function selectTable(id, number) {
+            selectedTableId = id;
+            selectedTableNumber = number;
+            document.querySelectorAll('.table-option').forEach(el =>
+                el.classList.remove('selected'));
+            const el = document.getElementById(`table-opt-${id}`);
+            if (el) el.classList.add('selected');
+        }
+
+        // ================================
+        // LOAD CART SUMMARY
+        // ================================
+        function loadCartSummary() {
+            const savedCart = localStorage.getItem('cafe_cart');
+            cart = savedCart ? JSON.parse(savedCart) : [];
+
+            const container = document.getElementById('cart-summary-content');
+            if (!container) return;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart-msg">
+                        No items in cart!<br>
+                        <a href="menu.html"
+                            style="color:#6F4E37; font-weight:600;">
+                            Browse Menu →
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            const total = cart.reduce((sum, item) =>
+                sum + (item.price * item.qty), 0);
+
+            container.innerHTML = `
+                ${cart.map(item => `
+                    <div class="cart-summary-item">
+                        <span>${item.name} x${item.qty}</span>
+                        <span>₹${(item.price * item.qty).toFixed(2)}</span>
+                    </div>
+                `).join('')}
+                <div class="cart-summary-total">
+                    <span>Total</span>
+                    <span>₹${total.toFixed(2)}</span>
+                </div>
+            `;
+        }
+
+        // ================================
+        // LOAD MY BOOKINGS
+        // ================================
+        async function loadMyBookings() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const container = document.getElementById('my-bookings-content');
+            if (!container) return;
+
+            try {
+                const response = await fetch(`${API_URL}/booking/my/${user.id}`);
+                const bookings = await response.json();
+
+                if (bookings.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-cart-msg">
+                            No bookings yet!<br>Make your first booking! 😊
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = bookings.slice(0, 5).map(booking => `
+                    <div class="booking-item">
+                        <h4>🪑 Table ${booking.table_number}
+                            — ${booking.location}</h4>
+                        <p>📆 ${formatDate(booking.booking_date)}</p>
+                        <p>⏰ ${booking.time_slot}</p>
+                        <p>👥 ${booking.num_people} people</p>
+                        <span class="booking-status status-${booking.status}">
+                            ${getStatusEmoji(booking.status)} ${capitalize(booking.status)}
+                        </span>
+                        ${booking.status !== 'cancelled' && booking.status !== 'completed'
+                            ? `<button class="cancel-booking-btn"
+                                onclick="cancelBooking(${booking.id})">
+                                ✕ Cancel
+                               </button>`
+                            : ''
+                        }
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="empty-cart-msg">
+                        ❌ Could not load bookings!
+                    </div>`;
+            }
+        }
+
+        // ================================
+        // SUBMIT BOOKING
+        // ================================
+        async function submitBooking() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const date = document.getElementById('booking-date').value;
+            const numPeople = document.getElementById('num-people').value;
+
+            // Validations
+            if (!date) {
+                showToast('❌ Please select a date!', 'error');
+                return;
+            }
+            if (!selectedTimeSlot) {
+                showToast('❌ Please select a time slot!', 'error');
+                return;
+            }
+            if (!selectedTableId) {
+                showToast('❌ Please select a table!', 'error');
+                return;
+            }
+
+            document.getElementById('booking-loading').style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_URL}/booking/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: user.id,
+                        table_id: selectedTableId,
+                        booking_date: date,
+                        time_slot: selectedTimeSlot,
+                        num_people: numPeople
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+    // Save booking info for billing
+    localStorage.setItem('last_booking_id', data.booking_id);
+    localStorage.setItem('last_booking_date', date);
+    localStorage.setItem('last_booking_slot', selectedTimeSlot);
+    localStorage.setItem('last_booking_table', selectedTableNumber);
+    localStorage.setItem('last_booking_people', numPeople);
+
+                    // Show success modal
+                    document.getElementById('modal-booking-id').textContent =
+                        `Booking ID: #${data.booking_id}`;
+                    document.getElementById('modal-details').textContent =
+                        `Table ${selectedTableNumber} • ${selectedTimeSlot} • ${date}`;
+                    document.getElementById('success-modal').classList.add('show');
+
+                    // Reload bookings
+                    loadMyBookings();
+                    loadTables();
+
+                } else {
+                    showToast(data.message || '❌ Booking failed!', 'error');
+                }
+
+            } catch (err) {
+                showToast('❌ Cannot connect to server!', 'error');
+                console.log('Booking error:', err);
+            }
+
+            document.getElementById('booking-loading').style.display = 'none';
+        }
+
+        // ================================
+        // CANCEL BOOKING
+        // ================================
+        async function cancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/booking/cancel/${bookingId}`, {
+                    method: 'PUT'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('✅ Booking cancelled!', 'success');
+                    loadMyBookings();
+                    loadTables();
+                } else {
+                    showToast(data.message || '❌ Could not cancel!', 'error');
+                }
+            } catch (err) {
+                showToast('❌ Cannot connect to server!', 'error');
+            }
+        }
+
+        // ================================
+        // CLOSE SUCCESS MODAL
+        // ================================
+       function closeModal() {
+    document.getElementById('success-modal').classList.remove('show');
+    window.location.href = 'billing.html';
+}
+
+        // Helper functions
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function getStatusEmoji(status) {
+            const emojis = {
+                'confirmed': '✅',
+                'pending': '⏳',
+                'cancelled': '❌',
+                'completed': '🎉'
+            };
+            return emojis[status] || '📋';
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Start everything
+        window.onload = function() {
+            updateNavbar();
+            initPage();
+        };
+    </script>
+
+</body>
+</html>

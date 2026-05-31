@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Tables — BrewTheory Cafe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brown-dark:  #2C1A0E;
+            --brown-mid:   #5C3317;
+            --brown-warm:  #8B4513;
+            --brown-light: #C68642;
+            --cream:       #FDF6EC;
+            --cream-dark:  #F5E6CE;
+            --cream-mid:   #EDD9B3;
+            --text-dark:   #1E1008;
+            --text-mid:    #5C3317;
+            --text-light:  #9A7050;
+            --green:       #3D7A4B;
+            --red:         #B33A2A;
+            --orange:      #B87333;
+            --blue:        #2C6496;
+            --sidebar-w:   250px;
+            --radius:      16px;
+            --radius-sm:   10px;
+            --shadow:      0 2px 16px rgba(44,26,14,0.09);
+            --shadow-card: 0 6px 32px rgba(44,26,14,0.13);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #EFE4D2;
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--brown-dark);
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+        }
+        .sidebar-logo {
+            padding: 1.75rem 1.5rem 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .sidebar-logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--brown-light);
+        }
+        .admin-tag {
+            display: inline-block;
+            margin-top: .4rem;
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,.3);
+            background: rgba(255,255,255,.06);
+            padding: .2rem .6rem;
+            border-radius: 20px;
+        }
+        .sidebar-nav { flex: 1; padding: 1.25rem 0; }
+        .nav-label {
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            color: rgba(255,255,255,.25);
+            padding: .85rem 1.5rem .35rem;
+        }
+        .s-link {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+            padding: .72rem 1.5rem;
+            color: rgba(255,255,255,.6);
+            text-decoration: none;
+            font-size: .88rem;
+            transition: all .2s;
+            border-left: 3px solid transparent;
+        }
+        .s-link:hover {
+            background: rgba(255,255,255,.05);
+            color: rgba(255,255,255,.9);
+        }
+        .s-link.active {
+            background: rgba(198,134,66,.13);
+            color: var(--brown-light);
+            border-left-color: var(--brown-light);
+            font-weight: 500;
+        }
+        .s-link .si { font-size: 1rem; width: 22px; text-align: center; }
+        .sidebar-bottom {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid rgba(255,255,255,.07);
+        }
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-bottom: .85rem;
+        }
+        .avatar {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--brown-warm), var(--brown-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            color: #fff;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .admin-profile .info p { font-size: .85rem; color: #fff; font-weight: 500; }
+        .admin-profile .info span { font-size: .7rem; color: rgba(255,255,255,.35); }
+        .logout-btn {
+            width: 100%;
+            padding: .55rem;
+            border-radius: var(--radius-sm);
+            background: rgba(179,58,42,.18);
+            border: 1px solid rgba(179,58,42,.25);
+            color: #e07060;
+            font-size: .82rem;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .logout-btn:hover { background: rgba(179,58,42,.3); }
+
+        /* MAIN */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 2rem 2.25rem;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .topbar h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: var(--brown-dark);
+        }
+        .topbar p {
+            font-size: .87rem;
+            color: var(--text-light);
+            margin-top: .25rem;
+        }
+        .topbar-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-refresh {
+            padding: .6rem 1.2rem;
+            background: white;
+            color: var(--brown-warm);
+            border: 2px solid var(--cream-mid);
+            border-radius: 25px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+        .btn-refresh:hover { background: var(--cream); }
+        .btn-add-table {
+            padding: .6rem 1.4rem;
+            background: var(--brown-warm);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+        .btn-add-table:hover { background: var(--brown-dark); }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--accent, var(--brown-warm));
+        }
+        .stat-card.c-green  { --accent: #3D7A4B; }
+        .stat-card.c-orange { --accent: #B87333; }
+        .stat-card.c-red    { --accent: #B33A2A; }
+        .stat-card.c-grey   { --accent: #888; }
+        .stat-icon {
+            font-size: 1.8rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .c-green  .stat-icon { background: rgba(61,122,75,.1); }
+        .c-orange .stat-icon { background: rgba(184,115,51,.1); }
+        .c-red    .stat-icon { background: rgba(179,58,42,.1); }
+        .c-grey   .stat-icon { background: rgba(136,136,136,.1); }
+        .stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+        .stat-label {
+            font-size: .72rem;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--brown-dark);
+            font-family: 'Playfair Display', serif;
+            line-height: 1.2;
+        }
+
+        /* LEGEND */
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .82rem;
+            font-weight: 500;
+            color: var(--text-mid);
+        }
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dot-available   { background: #3D7A4B; }
+        .dot-occupied    { background: #B33A2A; }
+        .dot-reserved    { background: #B87333; }
+        .dot-maintenance { background: #888; }
+
+        /* SECTION */
+        .section-block {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .section-hd {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--cream-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section-hd h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: var(--brown-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-count {
+            font-size: .75rem;
+            color: var(--text-light);
+            background: var(--cream);
+            padding: .2rem .7rem;
+            border-radius: 20px;
+        }
+
+        /* TABLES GRID */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            padding: 1.25rem;
+        }
+
+        /* TABLE CARD */
+        .table-card {
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            position: relative;
+            transition: all .2s;
+            cursor: pointer;
+        }
+        .table-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        .table-card.available {
+            background: linear-gradient(135deg, #f1fff1, #e8f5e9);
+            border-color: #3D7A4B;
+        }
+        .table-card.occupied {
+            background: linear-gradient(135deg, #fff5f5, #ffebee);
+            border-color: #B33A2A;
+        }
+        .table-card.reserved {
+            background: linear-gradient(135deg, #fffbf0, #fff3e0);
+            border-color: #B87333;
+        }
+        .table-card.maintenance {
+            background: #f5f5f5;
+            border-color: #bbb;
+            opacity: 0.7;
+        }
+
+        /* STATUS DOT */
+        .t-status-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px; right: 8px;
+        }
+        .available   .t-status-dot { background: #3D7A4B; }
+        .occupied    .t-status-dot { background: #B33A2A; }
+        .reserved    .t-status-dot { background: #B87333; }
+        .maintenance .t-status-dot { background: #888; }
+
+        .t-icon { font-size: 1.6rem; margin-bottom: 6px; }
+        .t-number {
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--brown-dark);
+            margin-bottom: 3px;
+        }
+        .t-capacity {
+            font-size: .7rem;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+        .t-status-badge {
+            font-size: .68rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .available   .t-status-badge { background: #e8f5e9; color: #2e7d32; }
+        .occupied    .t-status-badge { background: #ffebee; color: #c62828; }
+        .reserved    .t-status-badge { background: #fff3e0; color: #e65100; }
+        .maintenance .t-status-badge { background: #f5f5f5; color: #777; }
+
+        /* LOADING */
+        .loading-msg {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            grid-column: 1/-1;
+        }
+
+        /* EDIT STATUS MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: var(--radius);
+            padding: 35px;
+            width: 100%;
+            max-width: 420px;
+            animation: popIn .3s ease;
+            box-shadow: var(--shadow-card);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .modal-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--brown-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: .75rem;
+            border-bottom: 2px solid var(--cream-mid);
+        }
+
+        /* TABLE INFO IN MODAL */
+        .modal-table-info {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .modal-table-icon { font-size: 2.5rem; }
+        .modal-table-info h4 {
+            font-size: 1rem;
+            color: var(--brown-dark);
+            margin-bottom: 3px;
+        }
+        .modal-table-info p {
+            font-size: .8rem;
+            color: var(--text-light);
+        }
+
+        /* STATUS BUTTONS */
+        .status-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .status-option {
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .status-option .so-icon { font-size: 1.5rem; margin-bottom: 5px; }
+        .status-option .so-label {
+            font-size: .82rem;
+            font-weight: 600;
+            display: block;
+        }
+        .status-option.opt-available {
+            background: rgba(61,122,75,.08);
+            border-color: rgba(61,122,75,.2);
+            color: #3D7A4B;
+        }
+        .status-option.opt-available:hover,
+        .status-option.opt-available.selected {
+            background: rgba(61,122,75,.15);
+            border-color: #3D7A4B;
+        }
+        .status-option.opt-occupied {
+            background: rgba(179,58,42,.08);
+            border-color: rgba(179,58,42,.2);
+            color: #B33A2A;
+        }
+        .status-option.opt-occupied:hover,
+        .status-option.opt-occupied.selected {
+            background: rgba(179,58,42,.15);
+            border-color: #B33A2A;
+        }
+        .status-option.opt-reserved {
+            background: rgba(184,115,51,.08);
+            border-color: rgba(184,115,51,.2);
+            color: #B87333;
+        }
+        .status-option.opt-reserved:hover,
+        .status-option.opt-reserved.selected {
+            background: rgba(184,115,51,.15);
+            border-color: #B87333;
+        }
+        .status-option.opt-maintenance {
+            background: rgba(136,136,136,.08);
+            border-color: rgba(136,136,136,.2);
+            color: #666;
+        }
+        .status-option.opt-maintenance:hover,
+        .status-option.opt-maintenance.selected {
+            background: rgba(136,136,136,.15);
+            border-color: #888;
+        }
+
+        /* CAPACITY SELECT */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--text-mid);
+            margin-bottom: .4rem;
+        }
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: .7rem 1rem;
+            border: 2px solid var(--cream-mid);
+            border-radius: var(--radius-sm);
+            font-size: .88rem;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            transition: border .2s;
+            background: white;
+            box-sizing: border-box;
+        }
+        .form-group select:focus,
+        .form-group input:focus { border-color: var(--brown-warm); }
+
+        /* MODAL BUTTONS */
+        .modal-btns { display: flex; gap: 10px; }
+        .btn-save-status {
+            flex: 1;
+            padding: .75rem;
+            background: var(--brown-warm);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+        .btn-save-status:hover { background: var(--brown-dark); }
+        .btn-cancel-modal {
+            flex: 1;
+            padding: .75rem;
+            background: var(--cream);
+            color: var(--text-mid);
+            border: 2px solid var(--cream-mid);
+            border-radius: 25px;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-cancel-modal:hover { background: var(--cream-dark); }
+
+        /* ADD TABLE MODAL */
+        .add-modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .add-modal-overlay.show { display: flex; }
+
+        /* TOAST */
+        .toast-wrap {
+            position: fixed;
+            bottom: 25px; right: 25px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: .88rem;
+            font-weight: 500;
+            animation: slideIn .3s ease;
+            min-width: 220px;
+        }
+        .toast.success { background: #2C1A0E; color: white; border-left: 4px solid #3D7A4B; }
+        .toast.error   { background: #2C1A0E; color: white; border-left: 4px solid #B33A2A; }
+        @keyframes slideIn {
+            from { transform: translateX(80px); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+
+        @media (max-width: 1100px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .tables-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .main { padding: 1.25rem; }
+            .tables-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h1>BrewTheory</h1>
+            <div class="admin-tag">Admin Panel</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="dashboard.html" class="s-link">
+                <span class="si">📊</span> Dashboard
+            </a>
+            <div class="nav-label">Manage</div>
+            <a href="manage-menu.html" class="s-link">
+                <span class="si">🍽️</span> Menu Items
+            </a>
+            <a href="manage-bookings.html" class="s-link">
+                <span class="si">📅</span> Bookings
+            </a>
+            <a href="manage-tables.html" class="s-link active">
+                <span class="si">🪑</span> Tables
+            </a>
+            <div class="nav-label">Site</div>
+            <a href="../index.html" class="s-link">
+                <span class="si">🌐</span> View Website
+            </a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="admin-profile">
+                <div class="avatar" id="admin-avatar">A</div>
+                <div class="info">
+                    <p id="admin-name">Admin</p>
+                    <span>Administrator</span>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div>
+                <h2>🪑 Manage Tables</h2>
+                <p>View and update table status in real time</p>
+            </div>
+            <div class="topbar-btns">
+                <button class="btn-refresh" onclick="loadTables()">
+                    🔄 Refresh
+                </button>
+                <button class="btn-add-table" onclick="openAddModal()">
+                    + Add New Table
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS ROW -->
+        <div class="stats-row">
+            <div class="stat-card c-green">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <div class="stat-label">Available</div>
+                    <div class="stat-value" id="count-available">0</div>
+                </div>
+            </div>
+            <div class="stat-card c-orange">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <div class="stat-label">Reserved</div>
+                    <div class="stat-value" id="count-reserved">0</div>
+                </div>
+            </div>
+            <div class="stat-card c-red">
+                <div class="stat-icon">❌</div>
+                <div class="stat-info">
+                    <div class="stat-label">Occupied</div>
+                    <div class="stat-value" id="count-occupied">0</div>
+                </div>
+            </div>
+            <div class="stat-card c-grey">
+                <div class="stat-icon">🔧</div>
+                <div class="stat-info">
+                    <div class="stat-label">Maintenance</div>
+                    <div class="stat-value" id="count-maintenance">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEGEND -->
+        <div class="legend">
+            <span style="font-size:.82rem; font-weight:600;
+                color:var(--text-mid); margin-right:5px;">
+                Click any table to change its status:
+            </span>
+            <div class="legend-item">
+                <div class="legend-dot dot-available"></div>
+                Available
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot dot-reserved"></div>
+                Reserved
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot dot-occupied"></div>
+                Occupied
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot dot-maintenance"></div>
+                Maintenance
+            </div>
+        </div>
+
+        <!-- TABLES BY SECTION -->
+        <div id="tables-container">
+            <div style="text-align:center; padding:40px; color:var(--text-light);">
+                ⏳ Loading tables...
+            </div>
+        </div>
+
+    </main>
+
+    <!-- EDIT STATUS MODAL -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-box">
+            <h3>🪑 Update Table Status</h3>
+
+            <!-- TABLE INFO -->
+            <div class="modal-table-info">
+                <div class="modal-table-icon">🪑</div>
+                <div>
+                    <h4 id="modal-table-title">Table 1</h4>
+                    <p id="modal-table-details">2 seats • Window</p>
+                </div>
+            </div>
+
+            <!-- STATUS OPTIONS -->
+            <div style="font-size:.82rem; font-weight:600;
+                color:var(--text-mid); margin-bottom:10px;">
+                Select New Status:
+            </div>
+            <div class="status-options">
+                <div class="status-option opt-available"
+                     onclick="selectStatus('available', this)">
+                    <div class="so-icon">✅</div>
+                    <span class="so-label">Available</span>
+                </div>
+                <div class="status-option opt-reserved"
+                     onclick="selectStatus('reserved', this)">
+                    <div class="so-icon">📅</div>
+                    <span class="so-label">Reserved</span>
+                </div>
+                <div class="status-option opt-occupied"
+                     onclick="selectStatus('occupied', this)">
+                    <div class="so-icon">❌</div>
+                    <span class="so-label">Occupied</span>
+                </div>
+                <div class="status-option opt-maintenance"
+                     onclick="selectStatus('maintenance', this)">
+                    <div class="so-icon">🔧</div>
+                    <span class="so-label">Maintenance</span>
+                </div>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-cancel-modal" onclick="closeEditModal()">
+                    Cancel
+                </button>
+                <button class="btn-save-status" onclick="saveStatus()">
+                    💾 Save Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD TABLE MODAL -->
+    <div class="add-modal-overlay" id="add-modal">
+        <div class="modal-box">
+            <h3>➕ Add New Table</h3>
+
+            <div class="form-group">
+                <label>🔢 Table Number</label>
+                <input type="number" id="new-table-number"
+                       placeholder="e.g. 25" min="1">
+            </div>
+            <div class="form-group">
+                <label>👥 Capacity (seats)</label>
+                <select id="new-table-capacity">
+                    <option value="2">2 seats</option>
+                    <option value="4" selected>4 seats</option>
+                    <option value="6">6 seats</option>
+                    <option value="8">8 seats</option>
+                    <option value="10">10 seats</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>📍 Location</label>
+                <select id="new-table-location">
+                    <option value="window">🪟 Window</option>
+                    <option value="indoor" selected>🏠 Indoor</option>
+                    <option value="group">👥 Group</option>
+                    <option value="outdoor">🌿 Outdoor</option>
+                </select>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-cancel-modal" onclick="closeAddModal()">
+                    Cancel
+                </button>
+                <button class="btn-save-status" onclick="addNewTable()">
+                    ➕ Add Table
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast-wrap" id="toast-wrap"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        let allTables = [];
+        let editingTableId = null;
+        let selectedNewStatus = null;
+
+        const locationIcons = {
+            window: '🪟',
+            indoor: '🏠',
+            group: '👥',
+            outdoor: '🌿'
+        };
+
+        const locationLabels = {
+            window: 'Window Seats',
+            indoor: 'Indoor Seats',
+            group: 'Group Tables',
+            outdoor: 'Outdoor Seats'
+        };
+
+        // ================================
+        // CHECK LOGIN
+        // ================================
+        function checkLogin() {
+            const user = localStorage.getItem('user');
+            if (!user) {
+                window.location.href = '../login.html';
+                return;
+            }
+            const userData = JSON.parse(user);
+            document.getElementById('admin-name').textContent = userData.name || 'Admin';
+            document.getElementById('admin-avatar').textContent =
+                (userData.name || 'A').charAt(0).toUpperCase();
+        }
+
+        // ================================
+        // LOAD ALL TABLES
+        // ================================
+        async function loadTables() {
+            try {
+                const res = await fetch(`${API}/seating/all`);
+                const data = await res.json();
+                allTables = data.tables || [];
+                updateStats();
+                renderTables();
+            } catch (err) {
+                document.getElementById('tables-container').innerHTML = `
+                    <div style="text-align:center; padding:40px; color:var(--red);">
+                        ❌ Cannot connect to server!
+                        <br><br>
+                        <button class="btn-refresh" onclick="loadTables()">
+                            🔄 Try Again
+                        </button>
+                    </div>`;
+            }
+        }
+
+        // ================================
+        // UPDATE STATS
+        // ================================
+        function updateStats() {
+            document.getElementById('count-available').textContent =
+                allTables.filter(t => t.status === 'available').length;
+            document.getElementById('count-reserved').textContent =
+                allTables.filter(t => t.status === 'reserved').length;
+            document.getElementById('count-occupied').textContent =
+                allTables.filter(t => t.status === 'occupied').length;
+            document.getElementById('count-maintenance').textContent =
+                allTables.filter(t => t.status === 'maintenance').length;
+        }
+
+        // ================================
+        // RENDER TABLES BY SECTION
+        // ================================
+        function renderTables() {
+            const container = document.getElementById('tables-container');
+            const locations = ['window', 'indoor', 'group', 'outdoor'];
+            let html = '';
+
+            locations.forEach(location => {
+                const locationTables = allTables.filter(t => t.location === location);
+                if (locationTables.length === 0) return;
+
+                html += `
+                    <div class="section-block">
+                        <div class="section-hd">
+                            <h3>
+                                ${locationIcons[location]}
+                                ${locationLabels[location]}
+                            </h3>
+                            <span class="section-count">
+                                ${locationTables.length} tables
+                            </span>
+                        </div>
+                        <div class="tables-grid">
+                            ${locationTables.map(table => `
+                                <div class="table-card ${table.status}"
+                                     onclick="openEditModal(${table.id})">
+                                    <div class="t-status-dot"></div>
+                                    <div class="t-icon">
+                                        ${getTableIcon(table.capacity)}
+                                    </div>
+                                    <div class="t-number">
+                                        Table ${table.table_number}
+                                    </div>
+                                    <div class="t-capacity">
+                                        👤 ${table.capacity} seats
+                                    </div>
+                                    <div class="t-status-badge">
+                                        ${getStatusLabel(table.status)}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || `
+                <div style="text-align:center; padding:40px; color:var(--text-light);">
+                    😕 No tables found!
+                </div>`;
+        }
+
+        // ================================
+        // OPEN EDIT STATUS MODAL
+        // ================================
+        function openEditModal(tableId) {
+            const table = allTables.find(t => t.id === tableId);
+            if (!table) return;
+
+            editingTableId = tableId;
+            selectedNewStatus = table.status;
+
+            document.getElementById('modal-table-title').textContent =
+                `Table ${table.table_number}`;
+            document.getElementById('modal-table-details').textContent =
+                `${table.capacity} seats • ${capitalize(table.location)}`;
+
+            // Highlight current status
+            document.querySelectorAll('.status-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            const currentOpt = document.querySelector(`.opt-${table.status}`);
+            if (currentOpt) currentOpt.classList.add('selected');
+
+            document.getElementById('edit-modal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('show');
+            editingTableId = null;
+            selectedNewStatus = null;
+        }
+
+        // ================================
+        // SELECT STATUS IN MODAL
+        // ================================
+        function selectStatus(status, el) {
+            selectedNewStatus = status;
+            document.querySelectorAll('.status-option').forEach(o =>
+                o.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        // ================================
+        // SAVE STATUS
+        // ================================
+        async function saveStatus() {
+            if (!editingTableId || !selectedNewStatus) {
+                showToast('❌ Please select a status!', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/seating/update/${editingTableId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: selectedNewStatus })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    showToast(`✅ Table status updated to ${selectedNewStatus}!`, 'success');
+                    closeEditModal();
+                    loadTables();
+                } else {
+                    showToast(data.message || '❌ Update failed!', 'error');
+                }
+            } catch {
+                showToast('❌ Cannot connect to server!', 'error');
+            }
+        }
+
+        // ================================
+        // OPEN ADD TABLE MODAL
+        // ================================
+        function openAddModal() {
+            document.getElementById('new-table-number').value = '';
+            document.getElementById('new-table-capacity').value = '4';
+            document.getElementById('new-table-location').value = 'indoor';
+            document.getElementById('add-modal').classList.add('show');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.remove('show');
+        }
+
+        // ================================
+        // ADD NEW TABLE
+        // ================================
+        async function addNewTable() {
+            const tableNumber = document.getElementById('new-table-number').value;
+            const capacity = document.getElementById('new-table-capacity').value;
+            const location = document.getElementById('new-table-location').value;
+
+            if (!tableNumber) {
+                showToast('❌ Please enter table number!', 'error');
+                return;
+            }
+
+            // Check if table number already exists
+            if (allTables.find(t => t.table_number == tableNumber)) {
+                showToast('❌ Table number already exists!', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/seating/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        table_number: tableNumber,
+                        capacity: capacity,
+                        location: location,
+                        status: 'available'
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    showToast('✅ New table added!', 'success');
+                    closeAddModal();
+                    loadTables();
+                } else {
+                    showToast(data.message || '❌ Could not add table!', 'error');
+                }
+            } catch {
+                showToast('❌ Cannot connect to server!', 'error');
+            }
+        }
+
+        // Helper functions
+        function getTableIcon(capacity) {
+            if (capacity <= 2) return '🪑';
+            if (capacity <= 4) return '🍽️';
+            return '👥';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                available:   '✅ Available',
+                reserved:    '📅 Reserved',
+                occupied:    '❌ Occupied',
+                maintenance: '🔧 Maintenance'
+            };
+            return labels[status] || status;
+        }
+
+        function capitalize(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.textContent = msg;
+            document.getElementById('toast-wrap').appendChild(t);
+            setTimeout(() => t.remove(), 3300);
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+
+        window.onload = function() {
+            checkLogin();
+            loadTables();
+        };
+    </script>
+
+</body>
+</html>

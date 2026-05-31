@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Menu — BrewTheory Cafe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brown-dark:  #2C1A0E;
+            --brown-mid:   #5C3317;
+            --brown-warm:  #8B4513;
+            --brown-light: #C68642;
+            --cream:       #FDF6EC;
+            --cream-dark:  #F5E6CE;
+            --cream-mid:   #EDD9B3;
+            --text-dark:   #1E1008;
+            --text-mid:    #5C3317;
+            --text-light:  #9A7050;
+            --green:       #3D7A4B;
+            --red:         #B33A2A;
+            --sidebar-w:   250px;
+            --radius:      16px;
+            --radius-sm:   10px;
+            --shadow:      0 2px 16px rgba(44,26,14,0.09);
+            --shadow-card: 0 6px 32px rgba(44,26,14,0.13);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #EFE4D2;
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--brown-dark);
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+        }
+        .sidebar-logo {
+            padding: 1.75rem 1.5rem 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .sidebar-logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--brown-light);
+        }
+        .admin-tag {
+            display: inline-block;
+            margin-top: .4rem;
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,.3);
+            background: rgba(255,255,255,.06);
+            padding: .2rem .6rem;
+            border-radius: 20px;
+        }
+        .sidebar-nav { flex: 1; padding: 1.25rem 0; }
+        .nav-label {
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            color: rgba(255,255,255,.25);
+            padding: .85rem 1.5rem .35rem;
+        }
+        .s-link {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+            padding: .72rem 1.5rem;
+            color: rgba(255,255,255,.6);
+            text-decoration: none;
+            font-size: .88rem;
+            transition: all .2s;
+            border-left: 3px solid transparent;
+        }
+        .s-link:hover {
+            background: rgba(255,255,255,.05);
+            color: rgba(255,255,255,.9);
+        }
+        .s-link.active {
+            background: rgba(198,134,66,.13);
+            color: var(--brown-light);
+            border-left-color: var(--brown-light);
+            font-weight: 500;
+        }
+        .s-link .si { font-size: 1rem; width: 22px; text-align: center; }
+        .sidebar-bottom {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid rgba(255,255,255,.07);
+        }
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-bottom: .85rem;
+        }
+        .avatar {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--brown-warm), var(--brown-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            color: #fff;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .admin-profile .info p { font-size: .85rem; color: #fff; font-weight: 500; }
+        .admin-profile .info span { font-size: .7rem; color: rgba(255,255,255,.35); }
+        .logout-btn {
+            width: 100%;
+            padding: .55rem;
+            border-radius: var(--radius-sm);
+            background: rgba(179,58,42,.18);
+            border: 1px solid rgba(179,58,42,.25);
+            color: #e07060;
+            font-size: .82rem;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .logout-btn:hover { background: rgba(179,58,42,.3); }
+
+        /* MAIN */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 2rem 2.25rem;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .topbar h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: var(--brown-dark);
+        }
+        .topbar p {
+            font-size: .87rem;
+            color: var(--text-light);
+            margin-top: .25rem;
+        }
+        .add-btn-top {
+            padding: .6rem 1.4rem;
+            background: var(--brown-warm);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: .88rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+        .add-btn-top:hover { background: var(--brown-dark); }
+
+        /* FILTER TABS */
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: .5rem 1.2rem;
+            border-radius: 25px;
+            border: 2px solid var(--cream-mid);
+            background: white;
+            color: var(--text-mid);
+            font-size: .82rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: var(--brown-warm);
+            border-color: var(--brown-warm);
+            color: white;
+        }
+
+        /* MENU GRID */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        /* MENU CARD */
+        .menu-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(44,26,14,.16);
+        }
+        .menu-card.unavailable { opacity: 0.55; }
+
+        /* FOOD IMAGE */
+        .food-img-wrap {
+            width: 100%;
+            height: 160px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .food-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .food-emoji-bg {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--cream-dark), var(--cream-mid));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+        }
+        .upload-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(44,26,14,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .2s;
+        }
+        .food-img-wrap:hover .upload-overlay { opacity: 1; }
+        .upload-overlay span {
+            color: white;
+            font-size: .82rem;
+            font-weight: 600;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+        .hidden-input { display: none; }
+
+        /* CARD BODY */
+        .menu-card-body { padding: 1rem 1.1rem; }
+        .category-badge {
+            display: inline-block;
+            padding: .18rem .65rem;
+            border-radius: 20px;
+            font-size: .68rem;
+            font-weight: 600;
+            margin-bottom: .5rem;
+            text-transform: capitalize;
+        }
+        .cat-beverages { background: rgba(44,100,150,.1); color: #2C6496; }
+        .cat-snacks    { background: rgba(184,115,51,.1); color: #B87333; }
+        .cat-desserts  { background: rgba(107,63,140,.1); color: #6B3F8C; }
+        .item-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: var(--brown-dark);
+            margin-bottom: .3rem;
+            font-weight: 600;
+        }
+        .item-desc {
+            font-size: .75rem;
+            color: var(--text-light);
+            margin-bottom: .75rem;
+            line-height: 1.5;
+        }
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-price {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--brown-warm);
+        }
+        .card-actions { display: flex; gap: 6px; }
+        .btn-edit {
+            padding: .3rem .75rem;
+            background: rgba(44,100,150,.1);
+            color: #2C6496;
+            border: none;
+            border-radius: 8px;
+            font-size: .72rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .15s;
+        }
+        .btn-edit:hover { background: rgba(44,100,150,.2); }
+        .btn-delete {
+            padding: .3rem .75rem;
+            background: rgba(179,58,42,.1);
+            color: var(--red);
+            border: none;
+            border-radius: 8px;
+            font-size: .72rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .15s;
+        }
+        .btn-delete:hover { background: rgba(179,58,42,.2); }
+
+        /* AVAILABILITY TOGGLE */
+        .avail-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            font-size: .75rem;
+            color: var(--text-light);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 34px;
+            height: 18px;
+        }
+        .toggle-switch input { display: none; }
+        .toggle-slider {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #ccc;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: .3s;
+        }
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            width: 12px; height: 12px;
+            left: 3px; top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: .3s;
+        }
+        .toggle-switch input:checked + .toggle-slider { background: var(--green); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(16px); }
+
+        /* LOADING */
+        .loading-msg {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-light);
+            font-size: 1rem;
+            grid-column: 1/-1;
+        }
+
+        /* ADD/EDIT MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: var(--radius);
+            padding: 35px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: popIn .3s ease;
+            box-shadow: var(--shadow-card);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .modal-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--brown-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: .75rem;
+            border-bottom: 2px solid var(--cream-mid);
+        }
+        .form-group { margin-bottom: 1.1rem; }
+        .form-group label {
+            display: block;
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--text-mid);
+            margin-bottom: .4rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: .7rem 1rem;
+            border: 2px solid var(--cream-mid);
+            border-radius: var(--radius-sm);
+            font-size: .88rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: border .2s;
+            background: white;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--brown-warm);
+        }
+        .form-group textarea { height: 80px; resize: vertical; }
+
+        /* IMAGE UPLOAD IN MODAL */
+        .img-upload-area {
+            width: 100%;
+            height: 130px;
+            border: 2px dashed var(--cream-mid);
+            border-radius: var(--radius-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .2s;
+            background: var(--cream);
+            position: relative;
+            overflow: hidden;
+        }
+        .img-upload-area:hover {
+            border-color: var(--brown-warm);
+            background: var(--cream-dark);
+        }
+        .img-upload-area img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        .upload-hint {
+            font-size: .82rem;
+            color: var(--text-light);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .upload-hint span { font-size: 1.8rem; }
+
+        /* MODAL BUTTONS */
+        .modal-btns { display: flex; gap: 10px; margin-top: 1.5rem; }
+        .btn-save {
+            flex: 1;
+            padding: .75rem;
+            background: var(--brown-warm);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+        .btn-save:hover { background: var(--brown-dark); }
+        .btn-cancel-modal {
+            flex: 1;
+            padding: .75rem;
+            background: var(--cream);
+            color: var(--text-mid);
+            border: 2px solid var(--cream-mid);
+            border-radius: 25px;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-cancel-modal:hover { background: var(--cream-dark); }
+
+        /* DELETE MODAL */
+        .delete-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55);
+            z-index: 1100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .delete-modal.show { display: flex; }
+        .delete-box {
+            background: white;
+            border-radius: var(--radius);
+            padding: 35px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            animation: popIn .3s ease;
+        }
+        .delete-box .del-icon { font-size: 3rem; margin-bottom: 10px; }
+        .delete-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--brown-dark);
+            margin-bottom: 8px;
+        }
+        .delete-box p { color: var(--text-light); font-size: .85rem; margin-bottom: 20px; }
+        .delete-box-btns { display: flex; gap: 10px; }
+        .btn-confirm-del {
+            flex: 1;
+            padding: .7rem;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: .88rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-confirm-del:hover { background: #8B2A1A; }
+        .btn-keep {
+            flex: 1;
+            padding: .7rem;
+            background: var(--cream);
+            color: var(--text-mid);
+            border: 2px solid var(--cream-mid);
+            border-radius: 25px;
+            font-size: .88rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        /* TOAST */
+        .toast-wrap {
+            position: fixed;
+            bottom: 25px; right: 25px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: .88rem;
+            font-weight: 500;
+            animation: slideIn .3s ease;
+            min-width: 220px;
+        }
+        .toast.success { background: #2C1A0E; color: white; border-left: 4px solid #3D7A4B; }
+        .toast.error   { background: #2C1A0E; color: white; border-left: 4px solid #B33A2A; }
+        @keyframes slideIn {
+            from { transform: translateX(80px); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h1>BrewTheory</h1>
+            <div class="admin-tag">Admin Panel</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a href="dashboard.html" class="s-link">
+                <span class="si">📊</span> Dashboard
+            </a>
+            <div class="nav-label">Manage</div>
+            <a href="manage-menu.html" class="s-link active">
+                <span class="si">🍽️</span> Menu Items
+            </a>
+            <a href="manage-bookings.html" class="s-link">
+                <span class="si">📅</span> Bookings
+            </a>
+            <a href="manage-tables.html" class="s-link">
+                <span class="si">🪑</span> Tables
+            </a>
+            <div class="nav-label">Site</div>
+            <a href="../index.html" class="s-link">
+                <span class="si">🌐</span> View Website
+            </a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="admin-profile">
+                <div class="avatar" id="admin-avatar">A</div>
+                <div class="info">
+                    <p id="admin-name">Admin</p>
+                    <span>Administrator</span>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h2>🍽️ Menu Items</h2>
+                <p>Add, edit and manage all food and drink items</p>
+            </div>
+            <button class="add-btn-top" onclick="openAddModal()">
+                + Add New Item
+            </button>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterItems('all', this)">🍴 All</button>
+            <button class="filter-tab" onclick="filterItems('beverages', this)">☕ Beverages</button>
+            <button class="filter-tab" onclick="filterItems('snacks', this)">🍟 Snacks</button>
+            <button class="filter-tab" onclick="filterItems('desserts', this)">🍰 Desserts</button>
+        </div>
+
+        <div class="menu-grid" id="menu-grid">
+            <div class="loading-msg">⏳ Loading menu items...</div>
+        </div>
+    </main>
+
+    <!-- ADD/EDIT MODAL -->
+    <div class="modal-overlay" id="item-modal">
+        <div class="modal-box">
+            <h3 id="modal-title">➕ Add New Item</h3>
+            <div class="form-group">
+                <label>📷 Food Photo</label>
+                <div class="img-upload-area"
+                     onclick="document.getElementById('modal-img-input').click()">
+                    <img id="modal-img-preview" src="" style="display:none;">
+                    <div class="upload-hint" id="upload-hint">
+                        <span>📷</span>
+                        Click to upload photo
+                    </div>
+                </div>
+                <input type="file" id="modal-img-input"
+                       class="hidden-input" accept="image/*"
+                       onchange="previewImage(this)">
+            </div>
+            <div class="form-group">
+                <label>🏷️ Item Name</label>
+                <input type="text" id="modal-name" placeholder="e.g. Masala Chai">
+            </div>
+            <div class="form-group">
+                <label>📂 Category</label>
+                <select id="modal-category">
+                    <option value="beverages">☕ Beverages</option>
+                    <option value="snacks">🍟 Snacks</option>
+                    <option value="desserts">🍰 Desserts</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>💰 Price (₹)</label>
+                <input type="number" id="modal-price" placeholder="e.g. 60" min="0">
+            </div>
+            <div class="form-group">
+                <label>📝 Description</label>
+                <textarea id="modal-desc" placeholder="Short description..."></textarea>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" onclick="saveItem()">💾 Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div class="delete-modal" id="delete-modal">
+        <div class="delete-box">
+            <div class="del-icon">🗑️</div>
+            <h3>Delete Item?</h3>
+            <p>This item will be removed from the menu!</p>
+            <div class="delete-box-btns">
+                <button class="btn-keep" onclick="closeDeleteModal()">Keep It</button>
+                <button class="btn-confirm-del" onclick="confirmDelete()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-wrap" id="toast-wrap"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        let allItems = [];
+        let currentFilter = 'all';
+        let editingId = null;
+        let deletingId = null;
+
+        const categoryEmojis = {
+            beverages: '☕',
+            snacks: '🍟',
+            desserts: '🍰'
+        };
+
+        // ================================
+        // CHECK LOGIN
+        // ================================
+        function checkLogin() {
+            const user = localStorage.getItem('user');
+            if (!user) {
+                window.location.href = '../login.html';
+                return false;
+            }
+            const userData = JSON.parse(user);
+            if (userData.role !== 'admin') {
+                alert('❌ Admin access only!');
+                window.location.href = '../login.html';
+                return false;
+            }
+            document.getElementById('admin-name').textContent = userData.name || 'Admin';
+            document.getElementById('admin-avatar').textContent =
+                (userData.name || 'A').charAt(0).toUpperCase();
+            return true;
+        }
+
+        // ================================
+        // LOAD ALL MENU ITEMS
+        // ================================
+        async function loadMenu() {
+            try {
+                const res = await fetch(`${API}/menu/all`);
+
+                if (!res.ok) {
+                    throw new Error('Server error');
+                }
+
+                const data = await res.json();
+                allItems = Array.isArray(data) ? data : [];
+
+                if (allItems.length === 0) {
+                    document.getElementById('menu-grid').innerHTML = `
+                        <div class="loading-msg">
+                            😕 No menu items found!
+                            <br><br>
+                            <button class="add-btn-top" onclick="openAddModal()">
+                                + Add First Item
+                            </button>
+                        </div>`;
+                    return;
+                }
+
+                renderItems(allItems);
+
+            } catch (err) {
+                console.log('Menu load error:', err);
+                document.getElementById('menu-grid').innerHTML =
+                    `<div class="loading-msg">
+                        ❌ Cannot connect to server!
+                        <br>Make sure backend is running on port 5000!
+                        <br><br>
+                        <button class="add-btn-top" onclick="loadMenu()">
+                            🔄 Try Again
+                        </button>
+                    </div>`;
+            }
+        }
+
+        // ================================
+        // RENDER ITEMS
+        // ================================
+        function renderItems(items) {
+            const grid = document.getElementById('menu-grid');
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="loading-msg">😕 No items found!</div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(item => `
+                <div class="menu-card ${item.is_available == 0 ? 'unavailable' : ''}">
+                    <div class="food-img-wrap"
+                         onclick="document.getElementById('img-${item.id}').click()">
+                        ${item.image_url
+                            ? `<img src="http://localhost:5000${item.image_url}"
+                                   alt="${item.name}"
+                                   onerror="this.style.display='none';
+                                   document.getElementById('em-${item.id}').style.display='flex';">`
+                            : ''
+                        }
+                        <div id="em-${item.id}"
+                             class="food-emoji-bg"
+                             style="${item.image_url ? 'display:none' : 'display:flex'}">
+                            ${categoryEmojis[item.category] || '🍽️'}
+                        </div>
+                        <div class="upload-overlay">
+                            <span>📷 Change Photo</span>
+                        </div>
+                        <input type="file" id="img-${item.id}"
+                               class="hidden-input" accept="image/*"
+                               onchange="uploadPhoto(${item.id}, this)">
+                    </div>
+                    <div class="menu-card-body">
+                        <span class="category-badge cat-${item.category}">
+                            ${categoryEmojis[item.category]} ${capitalize(item.category)}
+                        </span>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-desc">
+                            ${item.description || 'No description added yet.'}
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹${item.price}</span>
+                            <div class="card-actions">
+                                <button class="btn-edit"
+                                    onclick="openEditModal(${item.id})">✏️ Edit</button>
+                                <button class="btn-delete"
+                                    onclick="openDeleteModal(${item.id})">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="avail-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox"
+                                    ${item.is_available == 1 ? 'checked' : ''}
+                                    onchange="toggleAvailability(${item.id}, this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span>${item.is_available == 1 ? '✅ Available' : '❌ Unavailable'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ================================
+        // FILTER
+        // ================================
+        function filterItems(category, btn) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filtered = category === 'all'
+                ? allItems
+                : allItems.filter(i => i.category === category);
+            renderItems(filtered);
+        }
+
+        // ================================
+        // UPLOAD PHOTO ON CARD
+        // ================================
+        async function uploadPhoto(itemId, input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ Image too large! Max 5MB!', 'error');
+                return;
+            }
+            showToast('⏳ Uploading...', 'success');
+            const formData = new FormData();
+            formData.append('image', file);
+            try {
+                const res = await fetch(`${API}/menu/update-image/${itemId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('✅ Photo uploaded!', 'success');
+                    loadMenu();
+                } else {
+                    showToast(data.message || '❌ Upload failed!', 'error');
+                }
+            } catch {
+                showToast('❌ Cannot connect!', 'error');
+            }
+        }
+
+        // ================================
+        // PREVIEW IMAGE IN MODAL
+        // ================================
+        function previewImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('modal-img-preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                document.getElementById('upload-hint').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ================================
+        // OPEN ADD MODAL
+        // ================================
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modal-title').textContent = '➕ Add New Item';
+            document.getElementById('modal-name').value = '';
+            document.getElementById('modal-category').value = 'beverages';
+            document.getElementById('modal-price').value = '';
+            document.getElementById('modal-desc').value = '';
+            document.getElementById('modal-img-preview').style.display = 'none';
+            document.getElementById('upload-hint').style.display = 'flex';
+            document.getElementById('modal-img-input').value = '';
+            document.getElementById('item-modal').classList.add('show');
+        }
+
+        // ================================
+        // OPEN EDIT MODAL
+        // ================================
+        function openEditModal(id) {
+            const item = allItems.find(i => i.id === id);
+            if (!item) return;
+            editingId = id;
+            document.getElementById('modal-title').textContent = '✏️ Edit Item';
+            document.getElementById('modal-name').value = item.name;
+            document.getElementById('modal-category').value = item.category;
+            document.getElementById('modal-price').value = item.price;
+            document.getElementById('modal-desc').value = item.description || '';
+            if (item.image_url) {
+                document.getElementById('modal-img-preview').src =
+                    `http://localhost:5000${item.image_url}`;
+                document.getElementById('modal-img-preview').style.display = 'block';
+                document.getElementById('upload-hint').style.display = 'none';
+            } else {
+                document.getElementById('modal-img-preview').style.display = 'none';
+                document.getElementById('upload-hint').style.display = 'flex';
+            }
+            document.getElementById('modal-img-input').value = '';
+            document.getElementById('item-modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('item-modal').classList.remove('show');
+            editingId = null;
+        }
+
+        // ================================
+        // SAVE ITEM
+        // ================================
+        async function saveItem() {
+            const name = document.getElementById('modal-name').value.trim();
+            const category = document.getElementById('modal-category').value;
+            const price = document.getElementById('modal-price').value;
+            const description = document.getElementById('modal-desc').value.trim();
+            const imgInput = document.getElementById('modal-img-input');
+
+            if (!name || !price) {
+                showToast('❌ Name and price are required!', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('category', category);
+            formData.append('price', price);
+            formData.append('description', description);
+            formData.append('is_veg', 1);
+            if (imgInput.files[0]) {
+                formData.append('image', imgInput.files[0]);
+            }
+
+            try {
+                const url = editingId
+                    ? `${API}/menu/edit/${editingId}`
+                    : `${API}/menu/add`;
+                const method = editingId ? 'PUT' : 'POST';
+
+                const res = await fetch(url, { method, body: formData });
+                const data = await res.json();
+
+                if (res.ok) {
+                    showToast(editingId ? '✅ Item updated!' : '✅ Item added!', 'success');
+                    closeModal();
+                    loadMenu();
+                } else {
+                    showToast(data.message || '❌ Failed!', 'error');
+                }
+            } catch {
+                showToast('❌ Cannot connect to server!', 'error');
+            }
+        }
+
+        // ================================
+        // TOGGLE AVAILABILITY
+        // ================================
+        async function toggleAvailability(id, isAvailable) {
+            try {
+                const res = await fetch(`${API}/menu/toggle/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_available: isAvailable })
+                });
+                if (res.ok) {
+                    showToast(isAvailable
+                        ? '✅ Marked available!'
+                        : '⚠️ Marked unavailable!', 'success');
+                    loadMenu();
+                }
+            } catch {
+                showToast('❌ Cannot connect!', 'error');
+            }
+        }
+
+        // ================================
+        // DELETE
+        // ================================
+        function openDeleteModal(id) {
+            deletingId = id;
+            document.getElementById('delete-modal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('show');
+            deletingId = null;
+        }
+
+        async function confirmDelete() {
+            if (!deletingId) return;
+            try {
+                const res = await fetch(`${API}/menu/delete/${deletingId}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('✅ Item deleted!', 'success');
+                    closeDeleteModal();
+                    loadMenu();
+                } else {
+                    showToast(data.message || '❌ Delete failed!', 'error');
+                }
+            } catch {
+                showToast('❌ Cannot connect!', 'error');
+            }
+        }
+
+        // ================================
+        // TOAST
+        // ================================
+        function showToast(msg, type = 'success') {
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.textContent = msg;
+            document.getElementById('toast-wrap').appendChild(t);
+            setTimeout(() => t.remove(), 3300);
+        }
+
+        function capitalize(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+
+        // ================================
+        // START
+        // ================================
+        window.onload = function() {
+            if (checkLogin()) {
+                loadMenu();
+            }
+        };
+    </script>
+
+</body>
+</html>

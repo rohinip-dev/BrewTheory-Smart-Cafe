@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☕ BrewTheory Cafe - Your Bill</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brown-dark:  #2C1A0E;
+            --brown-warm:  #8B4513;
+            --brown-light: #C68642;
+            --cream:       #FDF6EC;
+            --cream-dark:  #F5E6CE;
+            --cream-mid:   #EDD9B3;
+            --text-dark:   #1E1008;
+            --text-light:  #9A7050;
+            --green:       #3D7A4B;
+            --red:         #B33A2A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #EFE4D2;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--brown-dark);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--brown-light);
+        }
+        .logo span { color: var(--cream-mid); }
+        .nav-back {
+            padding: 8px 20px;
+            background: transparent;
+            color: var(--cream-mid);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .nav-back:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* PAGE WRAPPER */
+        .page-wrapper {
+            max-width: 800px;
+            margin: 90px auto 30px;
+        }
+
+        /* PAGE TITLE */
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--brown-dark);
+            margin-bottom: 5px;
+        }
+        .page-title p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* BILL CARD */
+        .bill-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(44,26,14,0.15);
+            overflow: hidden;
+        }
+
+        /* BILL HEADER */
+        .bill-header {
+            background: linear-gradient(135deg, var(--brown-dark), var(--brown-warm));
+            padding: 35px 40px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        .bill-header::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0; right: 0;
+            height: 30px;
+            background: white;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+        }
+        .bill-cafe-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--brown-light);
+            margin-bottom: 5px;
+        }
+        .bill-cafe-sub {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 15px;
+        }
+        .bill-id-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            color: white;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* BILL BODY */
+        .bill-body {
+            padding: 40px 40px 30px;
+        }
+
+        /* BOOKING INFO */
+        .booking-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+            background: var(--cream);
+            border-radius: 14px;
+            padding: 20px;
+        }
+        .info-item {
+    display: flex;
+    flex-direction: column;
+}
+        .info-label {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+        .info-value {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* SECTION TITLE */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--brown-dark);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--cream-mid);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ORDER ITEMS TABLE */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .order-table th {
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            padding: 8px 12px;
+            background: var(--cream);
+            border-bottom: 1px solid var(--cream-mid);
+        }
+        .order-table th:last-child { text-align: right; }
+        .order-table td {
+            padding: 12px;
+            font-size: 0.88rem;
+            border-bottom: 1px solid var(--cream-dark);
+            color: var(--text-dark);
+        }
+        .order-table td:last-child { text-align: right; font-weight: 600; }
+        .order-table tr:last-child td { border-bottom: none; }
+        .order-table tr:hover td { background: rgba(253,246,236,0.5); }
+        .item-qty {
+            display: inline-block;
+            background: var(--cream-mid);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 6px;
+            color: var(--brown-warm);
+        }
+
+        /* EMPTY ORDER */
+        .empty-order {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            background: var(--cream);
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .empty-order a {
+            color: var(--brown-warm);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* BILL SUMMARY */
+        .bill-summary {
+            background: var(--cream);
+            border-radius: 14px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.88rem;
+            color: var(--text-dark);
+            border-bottom: 1px solid var(--cream-mid);
+        }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row.discount { color: var(--green); }
+        .summary-row.tax { color: var(--text-light); }
+        .summary-row.total {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--brown-dark);
+            padding-top: 12px;
+            margin-top: 4px;
+            border-top: 2px solid var(--cream-mid);
+            border-bottom: none;
+        }
+        .summary-label { font-weight: 500; }
+        .summary-value { font-weight: 600; }
+
+        /* PAYMENT STATUS */
+        .payment-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .payment-status.pending {
+            background: rgba(184,115,51,0.1);
+            color: #B87333;
+            border: 1.5px solid rgba(184,115,51,0.2);
+        }
+        .payment-status.paid {
+            background: rgba(61,122,75,0.1);
+            color: var(--green);
+            border: 1.5px solid rgba(61,122,75,0.2);
+        }
+
+        /* ACTION BUTTONS */
+        .bill-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn-print {
+            flex: 1;
+            padding: 14px;
+            background: var(--brown-warm);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+        .btn-print:hover { background: var(--brown-dark); }
+        .btn-download {
+            flex: 1;
+            padding: 14px;
+            background: var(--green);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+        .btn-download:hover { background: #2d5c38; }
+        .btn-home {
+            flex: 1;
+            padding: 14px;
+            background: var(--cream);
+            color: var(--brown-warm);
+            border: 2px solid var(--cream-mid);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s;
+            min-width: 150px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-home:hover { background: var(--cream-dark); }
+
+        /* BILL FOOTER */
+        .bill-footer {
+            text-align: center;
+            padding: 20px 40px 30px;
+            border-top: 1px dashed var(--cream-mid);
+            color: var(--text-light);
+            font-size: 0.8rem;
+            line-height: 1.8;
+        }
+        .bill-footer strong {
+            color: var(--brown-warm);
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* THANK YOU MESSAGE */
+        .thankyou-msg {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--cream), var(--cream-dark));
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .thankyou-msg .icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .thankyou-msg h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--brown-dark);
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        .thankyou-msg p {
+            color: var(--text-light);
+            font-size: 0.82rem;
+        }
+
+        /* NO BOOKING STATE */
+        .no-booking {
+            text-align: center;
+            padding: 60px 40px;
+        }
+        .no-booking .icon { font-size: 4rem; margin-bottom: 15px; }
+        .no-booking h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--brown-dark);
+            margin-bottom: 10px;
+        }
+        .no-booking p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--brown-dark);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            z-index: 9999;
+            font-size: 0.88rem;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { border-left: 4px solid var(--green); }
+        .toast.error { border-left: 4px solid var(--red); }
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body { background: white; padding: 0; }
+            .navbar { display: none; }
+            .page-title { display: none; }
+            .bill-actions { display: none; }
+            .page-wrapper { margin-top: 0; }
+            .bill-card { box-shadow: none; border: 1px solid #ddd; }
+        }
+
+        @media (max-width: 600px) {
+            .bill-body { padding: 30px 20px 20px; }
+            .bill-header { padding: 25px 20px; }
+            .booking-info { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .bill-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">Brew<span>Theory</span> ☕</div>
+        <a href="index.html" class="nav-back">← Back to Home</a>
+    </nav>
+
+    <!-- PAGE WRAPPER -->
+    <div class="page-wrapper">
+
+        <div class="page-title">
+            <h1>🧾 Your Bill</h1>
+            <p>Thank you for dining at BrewTheory Cafe!</p>
+        </div>
+
+        <!-- BILL CARD -->
+        <div class="bill-card" id="bill-card">
+            <!-- Content will load here -->
+        </div>
+
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast-container"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+
+        // Tax rate
+        const GST_RATE = 0.05; // 5% GST
+        const SERVICE_CHARGE_RATE = 0.10; // 10% service charge
+
+        // ================================
+        // SHOW TOAST
+        // ================================
+        function showToast(message, type = 'success') {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ================================
+        // FORMAT DATE
+        // ================================
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            return new Date(dateStr).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        // ================================
+        // FORMAT TIME
+        // ================================
+        function formatTime() {
+            return new Date().toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // ================================
+        // LOAD AND RENDER BILL
+        // ================================
+        function loadBill() {
+            const user = localStorage.getItem('user');
+            const billCard = document.getElementById('bill-card');
+
+            // Check if user is logged in
+            if (!user) {
+                billCard.innerHTML = `
+                    <div class="no-booking">
+                        <div class="icon">🔐</div>
+                        <h2>Please Login First!</h2>
+                        <p>You need to be logged in to view your bill!</p>
+                        <a href="login.html" class="btn-print"
+                           style="display:inline-block; text-decoration:none;">
+                            🔑 Login Now
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            const userData = JSON.parse(user);
+
+            // Get booking info from localStorage
+            const bookingId = localStorage.getItem('last_booking_id');
+            const bookingDate = localStorage.getItem('last_booking_date');
+            const bookingSlot = localStorage.getItem('last_booking_slot');
+            const bookingTable = localStorage.getItem('last_booking_table');
+            const bookingPeople = localStorage.getItem('last_booking_people');
+
+            // Get cart items
+            const savedCart = localStorage.getItem('cafe_cart');
+            const cart = savedCart ? JSON.parse(savedCart) : [];
+
+            // If no booking found
+            if (!bookingId) {
+                billCard.innerHTML = `
+                    <div class="no-booking">
+                        <div class="icon">📋</div>
+                        <h2>No Recent Booking!</h2>
+                        <p>You have not made any booking yet!</p>
+                        <a href="booking.html" class="btn-print"
+                           style="display:inline-block; text-decoration:none; padding:14px 30px;">
+                            📅 Book a Table
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            // Calculate amounts
+            const subtotal = cart.reduce((sum, item) =>
+                sum + (item.price * item.qty), 0);
+            const gst = subtotal * GST_RATE;
+            const serviceCharge = subtotal * SERVICE_CHARGE_RATE;
+            const total = subtotal + gst + serviceCharge;
+
+            // Generate bill number
+            const billNumber = `BT-${bookingId}-${new Date().getFullYear()}`;
+
+            // Render the bill
+            billCard.innerHTML = `
+
+                <!-- BILL HEADER -->
+                <div class="bill-header">
+                    <div class="bill-cafe-name">☕ BrewTheory Cafe</div>
+                    <div class="bill-cafe-sub">
+                        Your favourite college hangout spot!
+                    </div>
+                    <div class="bill-id-badge">Bill No: ${billNumber}</div>
+                </div>
+
+                <!-- BILL BODY -->
+                <div class="bill-body">
+
+                    <!-- THANK YOU MESSAGE -->
+                    <div class="thankyou-msg">
+                        <div class="icon">🎉</div>
+                        <h3>Thank You, ${userData.name}!</h3>
+                        <p>We hope you enjoyed your experience at BrewTheory Cafe!</p>
+                    </div>
+
+                    <!-- BOOKING INFO -->
+                    <div class="section-title">📋 Booking Details</div>
+                    <div class="booking-info">
+                        <div class="info-item">
+                            <div class="info-label">Booking ID</div>
+                            <div class="info-value">#${bookingId}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Customer</div>
+                            <div class="info-value">${userData.name}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date</div>
+                            <div class="info-value">${formatDate(bookingDate)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Time Slot</div>
+                            <div class="info-value">${bookingSlot || '—'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Table</div>
+                            <div class="info-value">Table ${bookingTable || '—'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">People</div>
+                            <div class="info-value">👥 ${bookingPeople || '—'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Bill Time</div>
+                            <div class="info-value">${formatTime()}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">${userData.email}</div>
+                        </div>
+                    </div>
+
+                    <!-- ORDER ITEMS -->
+                    <div class="section-title">🛒 Order Summary</div>
+                    ${cart.length > 0 ? `
+                        <table class="order-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${cart.map((item, index) => `
+                                    <tr>
+                                        <td style="color:var(--text-light);">
+                                            ${index + 1}
+                                        </td>
+                                        <td>
+                                            ${item.name}
+                                        </td>
+                                        <td>₹${parseFloat(item.price).toFixed(2)}</td>
+                                        <td>
+                                            <span class="item-qty">x${item.qty}</span>
+                                        </td>
+                                        <td>
+                                            ₹${(item.price * item.qty).toFixed(2)}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : `
+                        <div class="empty-order">
+                            🛒 No food items ordered!
+                            <br>
+                            <a href="menu.html">Browse our menu →</a>
+                        </div>
+                    `}
+
+                    <!-- BILL SUMMARY -->
+                    <div class="section-title">💰 Bill Summary</div>
+                    <div class="bill-summary">
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal</span>
+                            <span class="summary-value">₹${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-row tax">
+                            <span class="summary-label">GST (5%)</span>
+                            <span class="summary-value">₹${gst.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-row tax">
+                            <span class="summary-label">Service Charge (10%)</span>
+                            <span class="summary-value">₹${serviceCharge.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span class="summary-label">Total Amount</span>
+                            <span class="summary-value">₹${total.toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    <!-- PAYMENT STATUS -->
+                    <div class="payment-status pending" id="payment-status">
+                        ⏳ Payment Pending — Pay at Counter
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="bill-actions">
+                        <button class="btn-print" onclick="printBill()">
+                            🖨️ Print Bill
+                        </button>
+                        <button class="btn-download" onclick="downloadBill()">
+                            ⬇️ Download Bill
+                        </button>
+                        <a href="index.html" class="btn-home">
+                            🏠 Back to Home
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- BILL FOOTER -->
+                <div class="bill-footer">
+                    <strong>BrewTheory Cafe</strong><br>
+                    Thank you for your visit! Come again soon! ☕<br>
+                    For any queries contact us at brewtheory@cafe.com<br>
+                    <br>
+                    <em>This is a computer generated bill</em>
+                </div>
+            `;
+        }
+
+        // ================================
+        // PRINT BILL
+        // ================================
+        function printBill() {
+            showToast('🖨️ Opening print dialog...', 'success');
+            setTimeout(() => window.print(), 500);
+        }
+
+        // ================================
+        // DOWNLOAD BILL AS TEXT FILE
+        // ================================
+        function downloadBill() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const bookingId = localStorage.getItem('last_booking_id');
+            const bookingDate = localStorage.getItem('last_booking_date');
+            const bookingSlot = localStorage.getItem('last_booking_slot');
+            const bookingTable = localStorage.getItem('last_booking_table');
+            const bookingPeople = localStorage.getItem('last_booking_people');
+            const cart = JSON.parse(localStorage.getItem('cafe_cart') || '[]');
+
+            const subtotal = cart.reduce((sum, item) =>
+                sum + (item.price * item.qty), 0);
+            const gst = subtotal * GST_RATE;
+            const serviceCharge = subtotal * SERVICE_CHARGE_RATE;
+            const total = subtotal + gst + serviceCharge;
+
+            const billText = `
+=====================================
+        BREWTHEORY CAFE
+   Your Favourite College Hangout!
+=====================================
+Bill No    : BT-${bookingId}-${new Date().getFullYear()}
+Date       : ${formatDate(bookingDate)}
+Time       : ${formatTime()}
+-------------------------------------
+Customer   : ${user.name}
+Email      : ${user.email}
+Table      : Table ${bookingTable}
+Time Slot  : ${bookingSlot}
+People     : ${bookingPeople}
+-------------------------------------
+ORDER ITEMS:
+${cart.map((item, i) =>
+    `${i+1}. ${item.name}
+   ₹${item.price} x ${item.qty} = ₹${(item.price * item.qty).toFixed(2)}`
+).join('\n')}
+-------------------------------------
+Subtotal        : Rs.${subtotal.toFixed(2)}
+GST (5%)        : Rs.${gst.toFixed(2)}
+Service Charge  : Rs.${serviceCharge.toFixed(2)}
+-------------------------------------
+TOTAL AMOUNT    : Rs.${total.toFixed(2)}
+-------------------------------------
+Payment Status  : Pay at Counter
+=====================================
+  Thank you for visiting us!
+  Come again soon! :)
+  brewtheory@cafe.com
+=====================================
+            `.trim();
+
+            // Create and download file
+            const blob = new Blob([billText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BrewTheory-Bill-${bookingId}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('✅ Bill downloaded!', 'success');
+        }
+
+        // Load bill on page open
+        window.onload = loadBill;
+    </script>
+
+</body>
+</html>

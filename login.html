@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrewTheory Cafe - Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2C1810 0%, #6F4E37 100%);
+            padding: 20px;
+        }
+        .auth-box {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-logo h1 {
+            font-size: 2rem;
+            color: #2C1810;
+        }
+        .auth-logo p {
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #E8D5B7;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+            background: white;
+            color: #777;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .auth-tab.active {
+            background: #6F4E37;
+            color: white;
+        }
+        .auth-form {
+            display: none;
+        }
+        .auth-form.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2C1810;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: border 0.3s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #6F4E37;
+        }
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            background: #6F4E37;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .btn-auth:hover {
+            background: #2C1810;
+        }
+        .switch-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #777;
+        }
+        .switch-text a {
+            color: #6F4E37;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .back-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-home a {
+            color: #6F4E37;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2C1810;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 9999;
+            font-size: 0.95rem;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { border-left: 4px solid #4CAF50; }
+        .toast.error { border-left: 4px solid #e74c3c; }
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .loading-text {
+            text-align: center;
+            color: #6F4E37;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-box">
+
+        <!-- LOGO -->
+        <div class="auth-logo">
+            <h1>BrewTheory Cafe</h1>
+            <p>Your favourite hangout spot!</p>
+        </div>
+
+        <!-- TABS -->
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">
+                🔑 Login
+            </button>
+            <button class="auth-tab" id="tab-register" onclick="switchTab('register')">
+                📝 Register
+            </button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div class="auth-form active" id="login-form">
+            <div class="form-group">
+                <label>📧 Email Address</label>
+                <input type="email" id="login-email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>🔒 Password</label>
+                <input type="password" id="login-password" placeholder="Enter your password">
+            </div>
+            <div class="loading-text" id="login-loading">⏳ Logging in...</div>
+            <button class="btn-auth" onclick="handleLogin()">🔑 Login to Cafe</button>
+            <div class="switch-text">
+                Don't have an account?
+                <a onclick="switchTab('register')">Register here!</a>
+            </div>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div class="auth-form" id="register-form">
+            <div class="form-group">
+                <label>👤 Full Name</label>
+                <input type="text" id="register-name" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label>📧 Email Address</label>
+                <input type="email" id="register-email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>🔒 Password</label>
+                <input type="password" id="register-password" placeholder="Create a password (min 6 characters)">
+            </div>
+            <div class="form-group">
+                <label>🔒 Confirm Password</label>
+                <input type="password" id="register-confirm" placeholder="Confirm your password">
+            </div>
+            <div class="loading-text" id="register-loading">⏳ Creating account...</div>
+            <button class="btn-auth" onclick="handleRegister()">📝 Create Account</button>
+            <div class="switch-text">
+                Already have an account?
+                <a onclick="switchTab('login')">Login here!</a>
+            </div>
+        </div>
+
+        <!-- BACK TO HOME -->
+        <div class="back-home">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // ================================
+    // ALL JAVASCRIPT IS HERE
+    // No external file needed!
+    // ================================
+
+    const API_URL = 'http://localhost:5000/api';
+
+    // Show toast message
+    function showToast(message, type = 'success') {
+        const old = document.querySelector('.toast');
+        if (old) old.remove();
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Switch between login and register tabs
+    function switchTab(tab) {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+
+        if (tab === 'login') {
+            document.getElementById('tab-login').classList.add('active');
+            document.getElementById('login-form').classList.add('active');
+        } else {
+            document.getElementById('tab-register').classList.add('active');
+            document.getElementById('register-form').classList.add('active');
+        }
+    }
+
+    // Handle Login
+    async function handleLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value.trim();
+
+        if (!email || !password) {
+            showToast('❌ Please fill all fields!', 'error');
+            return;
+        }
+
+        document.getElementById('login-loading').style.display = 'block';
+
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showToast('✅ Login successful! Welcome!', 'success');
+
+                setTimeout(() => {
+                    if (data.user.role === 'admin') {
+                        window.location.href = 'admin/dashboard.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                }, 1000);
+            } else {
+                showToast(data.message || '❌ Login failed!', 'error');
+            }
+        } catch (err) {
+            showToast('❌ Cannot connect to server! Is backend running?', 'error');
+            console.log('Login error:', err);
+        }
+
+        document.getElementById('login-loading').style.display = 'none';
+    }
+
+    // Handle Register
+    async function handleRegister() {
+        const name = document.getElementById('register-name').value.trim();
+        const email = document.getElementById('register-email').value.trim();
+        const password = document.getElementById('register-password').value.trim();
+        const confirm = document.getElementById('register-confirm').value.trim();
+
+        if (!name || !email || !password || !confirm) {
+            showToast('❌ Please fill all fields!', 'error');
+            return;
+        }
+
+        if (password !== confirm) {
+            showToast('❌ Passwords do not match!', 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            showToast('❌ Password must be at least 6 characters!', 'error');
+            return;
+        }
+
+        document.getElementById('register-loading').style.display = 'block';
+
+        try {
+            const response = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast('✅ Account created! Please login!', 'success');
+                setTimeout(() => switchTab('login'), 1500);
+            } else {
+                showToast(data.message || '❌ Registration failed!', 'error');
+            }
+        } catch (err) {
+            showToast('❌ Cannot connect to server! Is backend running?', 'error');
+            console.log('Register error:', err);
+        }
+
+        document.getElementById('register-loading').style.display = 'none';
+    }
+
+    // Press Enter to submit
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const loginActive = document.getElementById('login-form').classList.contains('active');
+            if (loginActive) handleLogin();
+            else handleRegister();
+        }
+    });
+</script>
+
+</body>
+</html>

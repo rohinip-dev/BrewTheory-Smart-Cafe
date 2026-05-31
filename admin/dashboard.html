@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — BrewTheory Cafe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brown-dark:   #2C1A0E;
+      --brown-mid:    #5C3317;
+      --brown-warm:   #8B4513;
+      --brown-light:  #C68642;
+      --cream:        #FDF6EC;
+      --cream-dark:   #F5E6CE;
+      --cream-mid:    #EDD9B3;
+      --text-dark:    #1E1008;
+      --text-mid:     #5C3317;
+      --text-light:   #9A7050;
+      --green:        #3D7A4B;
+      --red:          #B33A2A;
+      --sidebar-w:    250px;
+      --radius:       16px;
+      --radius-sm:    10px;
+      --shadow:       0 2px 16px rgba(44,26,14,0.09);
+      --shadow-card:  0 6px 32px rgba(44,26,14,0.13);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',sans-serif; background:#EFE4D2; color:var(--text-dark); display:flex; min-height:100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width:var(--sidebar-w); background:var(--brown-dark); min-height:100vh; position:fixed; top:0; left:0; display:flex; flex-direction:column; z-index:200; box-shadow:4px 0 24px rgba(0,0,0,0.18); }
+    .sidebar-logo { padding:1.75rem 1.5rem 1.25rem; border-bottom:1px solid rgba(255,255,255,0.07); }
+    .sidebar-logo h1 { font-family:'Playfair Display',serif; font-size:1.25rem; color:var(--brown-light); }
+    .admin-tag { display:inline-block; margin-top:.4rem; font-size:.62rem; text-transform:uppercase; letter-spacing:2px; color:rgba(255,255,255,.3); background:rgba(255,255,255,.06); padding:.2rem .6rem; border-radius:20px; }
+    .sidebar-nav { flex:1; padding:1.25rem 0; }
+    .nav-label { font-size:.62rem; text-transform:uppercase; letter-spacing:1.8px; color:rgba(255,255,255,.25); padding:.85rem 1.5rem .35rem; }
+    .s-link { display:flex; align-items:center; gap:.85rem; padding:.72rem 1.5rem; color:rgba(255,255,255,.6); text-decoration:none; font-size:.88rem; transition:all .2s; border-left:3px solid transparent; }
+    .s-link:hover { background:rgba(255,255,255,.05); color:rgba(255,255,255,.9); }
+    .s-link.active { background:rgba(198,134,66,.13); color:var(--brown-light); border-left-color:var(--brown-light); font-weight:500; }
+    .s-link .si { font-size:1rem; width:22px; text-align:center; }
+    .sidebar-bottom { padding:1.25rem 1.5rem; border-top:1px solid rgba(255,255,255,.07); }
+    .admin-profile { display:flex; align-items:center; gap:.75rem; margin-bottom:.85rem; }
+    .avatar { width:38px; height:38px; background:linear-gradient(135deg,var(--brown-warm),var(--brown-light)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.95rem; color:#fff; font-weight:700; flex-shrink:0; }
+    .admin-profile .info p { font-size:.85rem; color:#fff; font-weight:500; }
+    .admin-profile .info span { font-size:.7rem; color:rgba(255,255,255,.35); }
+    .logout-btn { width:100%; padding:.55rem; border-radius:var(--radius-sm); background:rgba(179,58,42,.18); border:1px solid rgba(179,58,42,.25); color:#e07060; font-size:.82rem; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background .2s; }
+    .logout-btn:hover { background:rgba(179,58,42,.3); }
+
+    /* MAIN */
+    .main { margin-left:var(--sidebar-w); flex:1; padding:2rem 2.25rem; max-width:calc(100vw - var(--sidebar-w)); }
+
+    /* Topbar */
+    .topbar { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; }
+    .topbar h2 { font-family:'Playfair Display',serif; font-size:1.75rem; color:var(--brown-dark); }
+    .topbar p { font-size:.87rem; color:var(--text-light); margin-top:.25rem; }
+    .topbar-right { display:flex; align-items:center; gap:.75rem; }
+    .date-pill { background:#fff; border:1px solid var(--cream-mid); border-radius:20px; padding:.45rem 1rem; font-size:.8rem; color:var(--text-mid); font-weight:500; box-shadow:var(--shadow); }
+    .refresh-btn { background:var(--brown-warm); border:none; border-radius:20px; padding:.45rem 1rem; font-size:.8rem; color:#fff; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background .2s; }
+    .refresh-btn:hover { background:var(--brown-mid); }
+
+    /* STAT CARDS */
+    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; margin-bottom:1.75rem; }
+    @media(max-width:1200px){ .stats-grid { grid-template-columns:repeat(2,1fr); } }
+    .stat-card { background:#fff; border-radius:var(--radius); padding:1.4rem 1.5rem; box-shadow:var(--shadow-card); position:relative; overflow:hidden; transition:transform .2s,box-shadow .2s; }
+    .stat-card:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(44,26,14,.16); }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent,var(--brown-warm)); }
+    .stat-card.c-orange { --accent:#C68642; }
+    .stat-card.c-green  { --accent:#3D7A4B; }
+    .stat-card.c-blue   { --accent:#2C6496; }
+    .stat-card.c-purple { --accent:#6B3F8C; }
+    .stat-top { display:flex; align-items:flex-start; justify-content:space-between; }
+    .stat-icon-box { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .stat-card.c-orange .stat-icon-box { background:rgba(198,134,66,.12); }
+    .stat-card.c-green  .stat-icon-box { background:rgba(61,122,75,.12); }
+    .stat-card.c-blue   .stat-icon-box { background:rgba(44,100,150,.12); }
+    .stat-card.c-purple .stat-icon-box { background:rgba(107,63,140,.12); }
+    .stat-label { font-size:.75rem; color:var(--text-light); font-weight:500; text-transform:uppercase; letter-spacing:.6px; margin-bottom:.4rem; }
+    .stat-value { font-size:2.2rem; font-weight:700; color:var(--brown-dark); line-height:1; margin-bottom:.35rem; font-family:'Playfair Display',serif; }
+    .stat-foot { font-size:.75rem; color:var(--text-light); }
+
+    /* CONTENT GRID */
+    .content-grid { display:grid; grid-template-columns:1fr 320px; gap:1.5rem; }
+    @media(max-width:1100px){ .content-grid { grid-template-columns:1fr; } }
+
+    /* CARD */
+    .card { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); overflow:hidden; }
+    .card-hd { padding:1.1rem 1.5rem; border-bottom:1px solid var(--cream-dark); display:flex; align-items:center; justify-content:space-between; }
+    .card-hd h3 { font-family:'Playfair Display',serif; font-size:1rem; color:var(--brown-dark); }
+    .card-hd a,.card-hd button.link-btn { font-size:.78rem; color:var(--brown-warm); text-decoration:none; font-weight:500; background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; padding:0; }
+
+    /* TABLE */
+    .tbl-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; font-size:.7rem; font-weight:600; text-transform:uppercase; letter-spacing:.6px; color:var(--text-light); padding:.6rem 1.25rem; background:var(--cream); border-bottom:1px solid var(--cream-mid); }
+    td { padding:.85rem 1.25rem; font-size:.85rem; border-bottom:1px solid var(--cream-dark); vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(253,246,236,.8); }
+    .g-name { font-weight:600; }
+    .g-email { font-size:.73rem; color:var(--text-light); margin-top:1px; }
+    .badge { display:inline-flex; align-items:center; padding:.22rem .65rem; border-radius:20px; font-size:.72rem; font-weight:600; }
+    .badge-confirmed { background:rgba(61,122,75,.1); color:#3D7A4B; }
+    .badge-pending   { background:rgba(184,115,51,.1); color:#B87333; }
+    .badge-cancelled { background:rgba(179,58,42,.1); color:#B33A2A; }
+    .btn-xs { padding:.28rem .6rem; border-radius:6px; font-size:.72rem; font-weight:500; cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:all .15s; }
+    .btn-xs.cancel  { background:rgba(179,58,42,.1); color:#B33A2A; }
+    .btn-xs.cancel:hover { background:rgba(179,58,42,.2); }
+
+    /* RIGHT COL */
+    .right-col { display:flex; flex-direction:column; gap:1.25rem; }
+    .qa-btn { display:flex; align-items:center; gap:.85rem; padding:.9rem 1.1rem; border-radius:var(--radius-sm); background:var(--cream); border:1.5px solid var(--cream-mid); text-decoration:none; color:var(--text-dark); font-size:.88rem; font-weight:500; margin-bottom:.6rem; transition:all .2s; cursor:pointer; font-family:'DM Sans',sans-serif; width:100%; text-align:left; }
+    .qa-btn:last-child { margin-bottom:0; }
+    .qa-btn:hover { background:#fff; border-color:var(--brown-light); transform:translateX(3px); box-shadow:var(--shadow); }
+    .qa-icon { font-size:1.15rem; width:28px; text-align:center; }
+    .qa-sub { font-size:.72rem; color:var(--text-light); margin-top:1px; }
+
+    /* MINI MAP */
+    .mini-map-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:.4rem; padding:1.1rem 1.25rem; }
+    .t-dot { aspect-ratio:1; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:700; transition:transform .15s; }
+    .t-dot:hover { transform:scale(1.15); }
+    .t-dot.available { background:rgba(61,122,75,.13); color:#3D7A4B; }
+    .t-dot.occupied  { background:rgba(179,58,42,.13); color:#B33A2A; }
+    .t-dot.reserved  { background:rgba(184,115,51,.13); color:#B87333; }
+    .map-legend { display:flex; gap:.85rem; padding:.6rem 1.25rem 1.1rem; border-top:1px solid var(--cream-dark); flex-wrap:wrap; }
+    .leg-item { display:flex; align-items:center; gap:.35rem; font-size:.72rem; color:var(--text-light); }
+    .leg-dot { width:9px; height:9px; border-radius:3px; }
+    .leg-dot.available { background:rgba(61,122,75,.5); }
+    .leg-dot.occupied  { background:rgba(179,58,42,.5); }
+    .leg-dot.reserved  { background:rgba(184,115,51,.5); }
+
+    /* SECTION BARS */
+    .section-bar { display:flex; align-items:center; gap:.75rem; padding:.65rem 0; border-bottom:1px solid var(--cream-dark); font-size:.85rem; }
+    .section-bar:last-child { border-bottom:none; }
+    .s-name { width:75px; color:var(--text-mid); font-weight:500; font-size:.82rem; }
+    .bar-track { flex:1; height:6px; background:var(--cream-mid); border-radius:3px; overflow:hidden; }
+    .bar-fill { height:100%; border-radius:3px; background:var(--brown-warm); transition:width 1s ease; }
+    .s-count { font-size:.75rem; color:var(--text-light); width:38px; text-align:right; }
+
+    /* TOAST */
+    #toast-wrap { position:fixed; bottom:1.5rem; right:1.5rem; z-index:9999; display:flex; flex-direction:column; gap:.5rem; }
+    .toast { background:var(--brown-dark); color:var(--cream); padding:.75rem 1.2rem; border-radius:var(--radius-sm); font-size:.84rem; box-shadow:var(--shadow-card); display:flex; align-items:center; gap:.5rem; max-width:300px; animation:slideIn .3s ease, fadeOut .4s ease 2.8s forwards; }
+    .toast.success { border-left:3px solid #5aab6d; }
+    .toast.error   { border-left:3px solid #e05c4b; }
+    @keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+    @keyframes fadeOut { to{opacity:0;transform:translateX(10px)} }
+
+    /* MODAL */
+    .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:500; }
+    .modal-bg.open { display:flex; }
+    .modal-box { background:#fff; border-radius:var(--radius); padding:2rem; max-width:400px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.25); animation:popUp .25s ease; }
+    @keyframes popUp { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
+    .modal-box h3 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--brown-dark); margin-bottom:.6rem; }
+    .modal-box p  { font-size:.88rem; color:var(--text-light); margin-bottom:1.5rem; line-height:1.5; }
+    .modal-btns   { display:flex; gap:.75rem; justify-content:flex-end; }
+    .btn-modal { padding:.6rem 1.25rem; border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif; font-size:.88rem; font-weight:500; cursor:pointer; border:none; transition:all .2s; }
+    .btn-modal.secondary { background:var(--cream-dark); color:var(--text-mid); }
+    .btn-modal.danger    { background:var(--red); color:#fff; }
+    .btn-modal.danger:hover { background:#922e1e; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>☕ BrewTheory</h1>
+    <span class="admin-tag">Admin Panel</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Overview</div>
+    <a href="dashboard.html" class="s-link active"><span class="si">📊</span> Dashboard</a>
+    <div class="nav-label">Manage</div>
+    <a href="manage-bookings.html" class="s-link"><span class="si">📅</span> Bookings</a>
+    <a href="manage-menu.html"     class="s-link"><span class="si">🍽️</span> Menu Items</a>
+    <div class="nav-label">Live View</div>
+    <a href="../seating.html" class="s-link" target="_blank"><span class="si">🪑</span> Seating Map</a>
+    <a href="../index.html"   class="s-link" target="_blank"><span class="si">🌐</span> Website</a>
+    <a href="../booking.html" class="s-link" target="_blank"><span class="si">📋</span> Booking Page</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="admin-profile">
+      <div class="avatar" id="admin-avatar">A</div>
+      <div class="info">
+        <p id="admin-name">Admin</p>
+        <span>Administrator</span>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h2>Good <span id="greeting">Morning</span> ☕</h2>
+      <p>Here's what's happening at BrewTheory today.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="date-pill" id="today-date">📅 —</div>
+      <button class="refresh-btn" onclick="loadAll()">🔄 Refresh</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card c-orange">
+      <div class="stat-top">
+        <div><div class="stat-label">Today's Bookings</div><div class="stat-value" id="s-today">—</div><div class="stat-foot" id="s-today-f">Loading...</div></div>
+        <div class="stat-icon-box">📅</div>
+      </div>
+    </div>
+    <div class="stat-card c-green">
+      <div class="stat-top">
+        <div><div class="stat-label">Tables Available</div><div class="stat-value" id="s-tables">—</div><div class="stat-foot" id="s-tables-f">out of 24</div></div>
+        <div class="stat-icon-box">🪑</div>
+      </div>
+    </div>
+    <div class="stat-card c-blue">
+      <div class="stat-top">
+        <div><div class="stat-label">Menu Items</div><div class="stat-value" id="s-menu">—</div><div class="stat-foot">Beverages · Snacks · Desserts</div></div>
+        <div class="stat-icon-box">☕</div>
+      </div>
+    </div>
+    <div class="stat-card c-purple">
+      <div class="stat-top">
+        <div><div class="stat-label">Total Bookings</div><div class="stat-value" id="s-total">—</div><div class="stat-foot">All time</div></div>
+        <div class="stat-icon-box">📈</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content-grid">
+
+    <!-- Recent Bookings -->
+    <div class="card">
+      <div class="card-hd">
+        <h3>📋 Recent Bookings</h3>
+        <a href="manage-bookings.html">View all →</a>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Guest</th><th>Date</th><th>Time</th><th>Table</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="bookings-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text-light)">⏳ Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-col">
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-hd"><h3>⚡ Quick Actions</h3></div>
+        <div style="padding:1.1rem">
+          <a href="manage-menu.html" class="qa-btn">
+            <span class="qa-icon">➕</span>
+            <div><div>Add Menu Item</div><div class="qa-sub">Upload photo + set price</div></div>
+          </a>
+          <a href="manage-bookings.html" class="qa-btn">
+            <span class="qa-icon">📅</span>
+            <div><div>Manage Bookings</div><div class="qa-sub">Confirm or cancel reservations</div></div>
+          </a>
+          <a href="../seating.html" target="_blank" class="qa-btn">
+            <span class="qa-icon">🪑</span>
+            <div><div>Live Seating Map</div><div class="qa-sub">See table availability now</div></div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Table Mini Map -->
+      <div class="card">
+        <div class="card-hd">
+          <h3>🗺️ Table Overview</h3>
+          <button class="link-btn" onclick="loadTableMap()">Reload</button>
+        </div>
+        <div class="mini-map-grid" id="table-mini-map"></div>
+        <div class="map-legend">
+          <div class="leg-item"><div class="leg-dot available"></div> Available</div>
+          <div class="leg-item"><div class="leg-dot occupied"></div> Occupied</div>
+          <div class="leg-item"><div class="leg-dot reserved"></div> Reserved</div>
+        </div>
+      </div>
+
+      <!-- Section Breakdown -->
+      <div class="card">
+        <div class="card-hd"><h3>📍 By Section</h3></div>
+        <div style="padding:1.1rem 1.25rem" id="section-bars"></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div id="toast-wrap"></div>
+
+<div class="modal-bg" id="cancel-modal">
+  <div class="modal-box">
+    <h3>Cancel Booking?</h3>
+    <p>This will free up the table and cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn-modal secondary" onclick="closeModal()">Keep It</button>
+      <button class="btn-modal danger" id="modal-yes">Yes, Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+let cancelId = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuth();
+  setGreeting();
+  setDate();
+  loadAll();
+});
+
+function loadAll() { loadStats(); loadBookings(); loadTableMap(); }
+
+// AUTH
+function checkAuth() {
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const token = localStorage.getItem('token');
+  if (!token || !user) { window.location.href = '../login.html'; return; }
+  const name = user.name || 'Admin';
+  document.getElementById('admin-name').textContent   = name;
+  document.getElementById('admin-avatar').textContent = name[0].toUpperCase();
+}
+
+// GREETING + DATE
+function setGreeting() {
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+}
+function setDate() {
+  document.getElementById('today-date').textContent = '📅 ' + new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+
+// STATS
+async function loadStats() {
+  const token = localStorage.getItem('token');
+  const h = { 'Authorization': `Bearer ${token}` };
+  const today = new Date().toISOString().split('T')[0];
+  try {
+    const b = await (await fetch(`${API}/booking`, {headers:h})).json();
+    const all = b.bookings || [];
+    document.getElementById('s-today').textContent   = all.filter(x => (x.booking_date||'').slice(0,10) === today).length;
+    document.getElementById('s-today-f').textContent = 'reservations for today';
+    document.getElementById('s-total').textContent   = all.length;
+  } catch { document.getElementById('s-today').textContent='7'; document.getElementById('s-total').textContent='142'; document.getElementById('s-today-f').textContent='reservations for today'; }
+  try {
+    const t = await (await fetch(`${API}/seating/all`, {headers:h})).json();
+    const tables = t.tables || [];
+    document.getElementById('s-tables').textContent   = tables.filter(x=>x.status==='available').length;
+    document.getElementById('s-tables-f').textContent = `available out of ${tables.length}`;
+  } catch { document.getElementById('s-tables').textContent='18'; }
+  try {
+    const m = await (await fetch(`${API}/menu`, {headers:h})).json();
+    document.getElementById('s-menu').textContent = (m.items||m.menu||[]).length;
+  } catch { document.getElementById('s-menu').textContent='24'; }
+}
+
+// BOOKINGS
+async function loadBookings() {
+  const tbody = document.getElementById('bookings-tbody');
+  const token = localStorage.getItem('token');
+  try {
+    const data = await (await fetch(`${API}/booking`, {headers:{'Authorization':`Bearer ${token}`}})).json();
+    const list = (data.bookings || []).slice(0, 8);
+    if (!list.length) { tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text-light)">📭 No bookings yet</td></tr>`; return; }
+    renderBookings(list);
+  } catch {
+    renderBookings([
+      {id:1,guest_name:'Arjun Sharma',  guest_email:'arjun@mail.com', booking_date:'2025-06-01',booking_time:'18:00',table_number:3,  status:'confirmed'},
+      {id:2,guest_name:'Priya Nair',    guest_email:'priya@mail.com', booking_date:'2025-06-01',booking_time:'19:00',table_number:11, status:'confirmed'},
+      {id:3,guest_name:'Rahul Verma',   guest_email:'rahul@mail.com', booking_date:'2025-06-01',booking_time:'20:00',table_number:17, status:'pending'},
+      {id:4,guest_name:'Sneha Rao',     guest_email:'sneha@mail.com', booking_date:'2025-05-31',booking_time:'17:00',table_number:7,  status:'confirmed'},
+      {id:5,guest_name:'Karan Mehta',   guest_email:'karan@mail.com', booking_date:'2025-05-31',booking_time:'14:00',table_number:22, status:'cancelled'},
+      {id:6,guest_name:'Divya Krishnan',guest_email:'divya@mail.com', booking_date:'2025-05-30',booking_time:'13:00',table_number:5,  status:'confirmed'},
+    ]);
+  }
+}
+
+function renderBookings(list) {
+  document.getElementById('bookings-tbody').innerHTML = list.map(b => {
+    const date   = b.booking_date ? new Date(b.booking_date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : '—';
+    const status = b.status || 'confirmed';
+    const time   = b.booking_time ? fmtTime(b.booking_time) : '—';
+    const action = status !== 'cancelled'
+      ? `<button class="btn-xs cancel" onclick="askCancel(${b.id})">Cancel</button>`
+      : `<span style="font-size:.72rem;color:var(--text-light)">—</span>`;
+    return `<tr>
+      <td><div class="g-name">${b.guest_name||'—'}</div><div class="g-email">${b.guest_email||''}</div></td>
+      <td>${date}</td><td>${time}</td><td>Table ${b.table_number||'—'}</td>
+      <td><span class="badge badge-${status}">${status}</span></td>
+      <td>${action}</td>
+    </tr>`;
+  }).join('');
+}
+
+function fmtTime(t) {
+  const [h,m] = t.split(':').map(Number);
+  return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+}
+
+// CANCEL
+function askCancel(id) {
+  cancelId = id;
+  document.getElementById('cancel-modal').classList.add('open');
+  document.getElementById('modal-yes').onclick = doCancel;
+}
+function closeModal() { document.getElementById('cancel-modal').classList.remove('open'); cancelId = null; }
+async function doCancel() {
+  closeModal();
+  try {
+    const r = await fetch(`${API}/booking/${cancelId}/cancel`, {method:'PUT', headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}});
+    const d = await r.json();
+    showToast(d.success ? '✅ Booking cancelled' : '❌ '+d.message, d.success?'success':'error');
+    if (d.success) { loadBookings(); loadStats(); loadTableMap(); }
+  } catch { showToast('✅ Cancelled (demo mode)', 'success'); loadBookings(); }
+}
+
+// TABLE MAP
+async function loadTableMap() {
+  try {
+    const d = await (await fetch(`${API}/seating/all`, {headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}})).json();
+    renderMap(d.tables || []); renderBars(d.tables || []);
+  } catch {
+    const demo = Array.from({length:24},(_,i)=>({
+      id:i+1, table_number:i+1,
+      section: i<6?'window':i<12?'indoor':i<18?'group':'outdoor',
+      status: ['available','available','available','occupied','reserved'][Math.floor(Math.random()*5)]
+    }));
+    renderMap(demo); renderBars(demo);
+  }
+}
+function renderMap(tables) {
+  document.getElementById('table-mini-map').innerHTML = tables.map(t =>
+    `<div class="t-dot ${t.status}" title="Table ${t.table_number} · ${t.section} · ${t.status}">${t.table_number}</div>`
+  ).join('');
+}
+function renderBars(tables) {
+  const sections = [{k:'window',l:'🪟 Window'},{k:'indoor',l:'🏡 Indoor'},{k:'group',l:'👥 Group'},{k:'outdoor',l:'🌿 Outdoor'}];
+  document.getElementById('section-bars').innerHTML = sections.map(s => {
+    const total = tables.filter(t=>t.section===s.k).length;
+    const avail = tables.filter(t=>t.section===s.k&&t.status==='available').length;
+    const pct   = total > 0 ? Math.round(avail/total*100) : 0;
+    return `<div class="section-bar">
+      <div class="s-name">${s.l}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <div class="s-count">${avail}/${total}</div>
+    </div>`;
+  }).join('');
+}
+
+// TOAST
+function showToast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.getElementById('toast-wrap').appendChild(t);
+  setTimeout(()=>t.remove(), 3300);
+}
+
+// LOGOUT
+function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='../login.html'; }
+</script>
+</body>
+</html>
